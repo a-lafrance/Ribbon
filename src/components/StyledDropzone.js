@@ -6,15 +6,15 @@ const baseStyle = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '20px',
-    borderWidth: 2,
-    borderRadius: 2,
-    borderColor: '#eeeeee',
+    padding: '40px 20px 40px 20px',
+    borderWidth: 5,
+    borderColor: '#cccccc',
     borderStyle: 'dashed',
     backgroundColor: '#fafafa',
     color: '#bdbdbd',
     outline: 'none',
-    transition: 'border .24s ease-in-out'
+    transition: 'border .24s ease-in-out',
+    fontSize: 'calc(5px + 2vmin)'
 };
 
 const activeStyle = {
@@ -42,7 +42,7 @@ function StyledDropzone(props) {
         <div className="container">
             <div {...getRootProps({ style })}>
                 <input {...getInputProps()} />
-                <p>Drag 'n' drop your message_1.json here, or click to select from your file system</p>
+                <p>Drop your message_1.json here, or click to select from your file system</p>
             </div>
         </div>
     );
