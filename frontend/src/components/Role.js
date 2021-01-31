@@ -50,20 +50,16 @@ let Role = props => {
     let roleStat = (props.data[1][1]*100).toPrecision(3) + roleDict[props.data[1][0]][2];
 
     return (
-        <div className="panelCard roleCard">
-            
-            <div className="roleCardInner">
-                <div>
-                    <img className="roleIcon" src={roleIcon} />
-                </div>
-                <div className="roleCardInnerInfo">
-                    <div className="roleTitle"> {roleTitle} </div>
-                    <div> {rolePersonName} </div>
-                    <div> {roleDesc} </div>
-                    <div> {roleStat} </div>
-                </div>
-            </div>
+      <div className="panelCard roleCard">
+        <div className="roleInfo">
+          <div className="roleTitle"> {roleTitle} </div>
+          <div> {roleDesc} </div>
         </div>
+        <div className="roleRecipient">
+          <div> {rolePersonName} </div>
+          <div> {roleStat} </div>
+        </div>
+      </div>
     );
 }
 
