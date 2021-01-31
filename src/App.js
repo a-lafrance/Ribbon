@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import StyledDropzone from './components/StyledDropzone.js'
 
 import './App.css';
+import './styles/PanelCard.css'
 
 function App() {
 
