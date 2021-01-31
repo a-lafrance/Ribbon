@@ -396,6 +396,15 @@ function processContent(content) {
 
   console.log('Final results:');
   console.log(roleAssigner.assignRoles());
-
   console.log('');
+}
+
+// tells you whether the given string contains at least one emoji (I feel like actually counting the # per message is unnecessary)
+function contains_emoji(s) {
+  return /\p{Extended_Pictographic}/u.test(decode_utf8(s))
+}
+
+// returns a string that will actually be printed as the emoji
+function decode_utf8(s) {
+  return decodeURIComponent(escape(s));
 }
