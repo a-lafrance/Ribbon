@@ -3,6 +3,7 @@
   grid-template-columns: 1fr 1fr;
   color: rgba(var(--pink), 0.6);
   padding-bottom: 32px;
+  gap: 32px;
 }
 
 .genStatCard div{
