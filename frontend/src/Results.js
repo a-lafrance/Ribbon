@@ -20,6 +20,7 @@ import './styles/PanelCard.css';
 import GeneralStats from './components/GeneralStats.js';
 import MemberStats from './components/MemberStats.js';
 import ReactionStats from './components/ReactionStats.js';
+import MessageStats from './components/MessageStats.js';
 
 class Results extends React.Component {
     constructor(props) {
@@ -65,6 +66,7 @@ class Results extends React.Component {
               {<GeneralStats results={this.state.result}/>}
               {<MemberStats results={this.state.result}/>}
               <ReactionStats results={this.state.result}/>
+              <MessageStats results={this.state.result} />
               {this.state.roleComponents}
           </div>
       );
