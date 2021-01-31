@@ -31,6 +31,16 @@ export default function analyzeGroupchat(content) {
   }
 
   let reactCounts = {};
+  let wordCounts = {};
+  const TOO_COMMON_WORDS = new Set([
+    'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by',
+    'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who',
+    'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'into', 'year', 'your', 'good', 'some', 'could',
+    'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how', 'our', 'work',
+    'first', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'was', 'which', 'why', 'yeah', 'too', 'my', 'like',
+    'lol', 'lolol', 'lmao', 'yeah', 'sure', 'aight', 'alright', 'ok', 'btw', 'sup', 'okay', 'uh', 'um', 'uhh', 'hey', 'hi', 'yo', 'oh', 'ooh', 'nice', 'wait', 'oooh',
+    'cool', 'thats', 'true', 'ahh'
+  ])
   let longestStreak = [];
   let firstMessage = '';
 
@@ -94,9 +104,44 @@ export default function analyzeGroupchat(content) {
         longestStreakLength = streakLength(streakStartMillis, streakEndMillis);
       }
 
-      // set firstMessage to message content
-      if ("content" in message)
-        firstMessage = message.content;
+      // stuff to do with content
+      if ("content" in message) {
+        const content = message.content;
+        // set firstMessage to message content
+        firstMessage = content;
+
+        if (!/sent an attachment/.test(content.toLowerCase()) && !/named the group/.test(content.toLowerCase())) {
+          for (let phrase of (content.match(/(^|\s)([A-Za-z]+\s[A-Za-z]+\s[A-Za-z]+)($|\s)/g) || [])) {
+            let croppedPhrase = phrase;
+
+            if (croppedPhrase[0] == ' ') {
+              croppedPhrase = croppedPhrase.substr(1, croppedPhrase.length);
+            }
+
+            if (croppedPhrase[croppedPhrase.length - 1] == ' ') {
+              croppedPhrase = croppedPhrase.substr(0, croppedPhrase.length - 1);
+            }
+
+            const lowerPhrase = croppedPhrase.toLowerCase()
+            let numCommonWords = 0;
+
+            for (let word of lowerPhrase.split(' ')) {
+              if (TOO_COMMON_WORDS.has(word)) {
+                numCommonWords++;
+              }
+            }
+
+            // only increment if it's not too common
+            if (numCommonWords <= 1) {
+              if (!(lowerPhrase in wordCounts)) {
+                wordCounts[lowerPhrase] = 0;
+              }
+
+              wordCounts[lowerPhrase]++;
+            }
+          }
+        }
+      }
 
       roleAssigner.update(message);
     }
@@ -123,14 +168,34 @@ export default function analyzeGroupchat(content) {
     }
   }
 
+  // sort everything
+  let sortedReactCounts = Object.keys(reactCounts).map(function(key) {
+    return [key, reactCounts[key]];
+  });
+  sortedReactCounts.sort(function(x, y) {return y[1] - x[1]});
+  sortedReactCounts = sortedReactCounts.slice(0, 10);
+
+  let sortedWordCounts = Object.keys(wordCounts).map(function(key) {
+    return [key, wordCounts[key]];
+  });
+  sortedWordCounts.sort(function(x, y) {return y[1] - x[1]});
+  sortedWordCounts = sortedWordCounts.slice(0, 10);
+
+  let sortedMessagesByMember = Object.keys(totalMessages).map(function(key) {
+    return [key, totalMessages[key]];
+  });
+  sortedMessagesByMember.sort(function(x, y) {return y[1] - x[1]});
+  sortedMessagesByMember = sortedMessagesByMember.slice(0, 10);
+
   return {
     mostFrequentTime: [mostFrequentTime, maxMessageCount],
     mostTotalReacts: [mostTotalReactedMember, mostTotalReacts],
-    reactCounts: reactCounts,
+    reactCounts: sortedReactCounts,
+    wordCounts: sortedWordCounts,
     longestStreak: [longestStreakStartMillis, longestStreakEndMillis],
     firstMessage: firstMessage,
     totalMessages: totalMessages,
-    totalMessagesByMember: totalMessagesByMember,
+    totalMessagesByMember: sortedMessagesByMember,
     roles: roleAssigner.assignRoles()
   };
 }
