@@ -4,6 +4,12 @@ import StyledDropzone from './components/StyledDropzone.js'
 import analyzeGroupchat from './analytics/analyzer.js'
 import { getResult, saveResult } from './analytics/api.js'
 
+import GeneralStats from './components/GeneralStats.js';
+import MemberStats from './components/MemberStats.js';
+import ReactionStats from './components/ReactionStats.js';
+import MessageStats from './components/MessageStats.js';
+import ChatStats from './components/ChatStats.js';
+
 import Tutorial from './components/Tutorial.js';
 import Role from './components/Role.js'
 import {
@@ -18,10 +24,7 @@ import {
 import './App.css';
 import './styles/Results.css';
 import './styles/PanelCard.css';
-import GeneralStats from './components/GeneralStats.js';
-import MemberStats from './components/MemberStats.js';
-import ReactionStats from './components/ReactionStats.js';
-import MessageStats from './components/MessageStats.js';
+
 
 class Results extends React.Component {
     constructor(props) {
@@ -70,6 +73,7 @@ class Results extends React.Component {
               {<MemberStats results={this.state.result}/>}
               <ReactionStats results={this.state.result}/>
               <MessageStats results={this.state.result} />
+              <ChatStats results={this.state.result} />
               {this.state.roleComponents}
             </div>
           </div>
