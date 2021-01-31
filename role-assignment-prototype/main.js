@@ -1,5 +1,5 @@
 
-export default function analyzeGroupchat(content) {
+function analyzeGroupchat(content) {
   let members = content.participants.map(participant => participant.name);
   roleAssigner = new RoleAssigner(members);
 
@@ -171,7 +171,9 @@ class RoleAssigner {
       new TalkerScorekeeper(members),
       new LurkerScorekeeper(members),
       new PhotographerScorekeeper(members),
-      new ReacterScorekeeper(members)
+      new ReacterScorekeeper(members),
+      new EnglishTeacherScorekeeper(members),
+      new SailorScorekeeper(members),
     ];
   }
 
@@ -185,12 +187,16 @@ class RoleAssigner {
     let scores = {};
 
     for (const scorekeeper of this.scorekeepers) {
-      for (const [member, score] of Object.entries(scorekeeper.scores())) {
-        if (!(member in scores)) {
-            scores[member] = [];
-        }
+      if (scorekeeper.valid()) {
+        for (const [member, score] of Object.entries(scorekeeper.scores())) {
+          if (!(member in scores)) {
+              scores[member] = [];
+          }
 
-        scores[member].push(score);
+          scores[member].push(score);
+        }
+      } else {
+        console.log('scorekeeper is not valid')
       }
     }
 
@@ -273,6 +279,10 @@ class BlabbermouthScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -286,7 +296,7 @@ class BlabbermouthScorekeeper {
   }
 
   role() {
-    return 'Blabbermouth';
+    return 'The Blabbermouth';
   }
 }
 
@@ -314,6 +324,10 @@ class TalkerScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -327,7 +341,7 @@ class TalkerScorekeeper {
   }
 
   role() {
-    return 'Talker';
+    return 'The Talker';
   }
 }
 
@@ -338,6 +352,10 @@ class LurkerScorekeeper {
 
   update(message) {
     this.inverse.update(message);
+  }
+
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
   }
 
   scores() {
@@ -359,7 +377,7 @@ class LurkerScorekeeper {
   }
 
   role() {
-    return 'Lurker';
+    return 'The Lurker';
   }
 }
 
@@ -387,6 +405,10 @@ class PhotographerScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -400,7 +422,7 @@ class PhotographerScorekeeper {
   }
 
   role() {
-    return 'Photographer';
+    return 'The Photographer';
   }
 }
 
@@ -428,6 +450,10 @@ class ReacterScorekeeper {
     }
   }
 
+  valid() {
+    return this.totalReacts > 10;
+  }
+
   scores() {
     let scores = {};
 
@@ -441,11 +467,138 @@ class ReacterScorekeeper {
   }
 
   role() {
-    return 'Reacter';
+    return 'The Reacter';
+  }
+}
+
+class EnglishTeacherScorekeeper {
+  COMMA_WEIGHT = 1;
+  SEMICOLON_WEIGHT = 3;
+
+  constructor(members) {
+    this.punctuationScores = {};
+
+    for (const member of members) {
+      this.punctuationScores[member] = 0.0;
+    }
+
+    this.totalPunctuationScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.punctuationScores) {
+      if ("content" in message) {
+        const content = message["content"]
+        const commaCount = (content.match(/[A-Za-z],\s/g) || []).length;
+        const semicolonCount = (content.match(/[A-Za-z];\s/g) || []).length;
+        // no period counts because all "CMO changed the nickname of Kevin Xu to CFO"
+
+        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.SEMICOLON_WEIGHT * semicolonCount;
+        this.punctuationScores[member] += scoreIncrement;
+        this.totalPunctuationScore += scoreIncrement;
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalPunctuationScore > 100;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
+      if (punctuationScore > 0) {
+        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The English Teacher';
+  }
+}
+
+class SailorScorekeeper {
+  SWEAR_WEIGHTS = {
+    'shit': 1,
+    'bitch': 1,
+    '\bass\b': 1,
+    'cunt': 1,
+    'fuck': 1,
+    'motherfuck': 1, // motherfuck contains fuck, so really it's 1 + 1 = 2
+  };
+
+  constructor(members) {
+    this.swearScores = {};
+
+    for (const member of members) {
+      this.swearScores[member] = 0.0;
+    }
+
+    this.totalSwearScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.swearScores) {
+      if ('content' in message) {
+        const content = message['content']
+
+        for (const word in this.SWEAR_WEIGHTS) {
+          const regex = new RegExp(`${word}`, 'gi')
+          const wordCount = (content.match(regex) || []).length;
+          scoreIncrement += this.SWEAR_WEIGHTS[word] * wordCount;
+        }
+
+        this.swearScores[member] += scoreIncrement;
+        this.totalSwearScore += scoreIncrement;
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalSwearScore > 10;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, swearScore] of Object.entries(this.swearScores)) {
+      if (swearScore > 0) {
+        scores[member] = [this.role(), swearScore / this.totalSwearScore];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The Sailor';
   }
 }
 
 function processContent(content) {
   console.log("calculating scores for chat named '" + content.title + "'");
   console.log(analyzeGroupchat(content));
+}
+
+// tells you whether the given string contains at least one emoji (I feel like actually counting the # per message is unnecessary)
+function num_emojis(s) {
+  const decoded_string = decode_utf8(s)
+  return (decoded_string.match(/\p{Extended_Pictographic}/gu) || []).length
+}
+
+// returns a string that will actually be printed as the emoji
+function decode_utf8(s) {
+  return decodeURIComponent(escape(s));
 }
