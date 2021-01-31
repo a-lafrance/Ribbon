@@ -1,5 +1,6 @@
 import React from 'react';
 import StyledDropzone from './components/StyledDropzone.js'
+import analyzeGroupchat from './analytics/analyzer.js'
 
 import './App.css';
 import './styles/PanelCard.css'
@@ -24,7 +25,9 @@ class App extends React.Component {
       //processContent(content)
       // Import Arthur's js processing and call it here
       console.log(content);
-      this.setState({results: content});
+      const result = analyzeGroupchat(content);
+      console.log(result);
+      this.setState({results: result});
     }
     fr.readAsText(file);
   }
