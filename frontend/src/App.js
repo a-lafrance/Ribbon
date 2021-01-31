@@ -25,51 +25,34 @@ class App extends React.Component {
     }
   }
 
-    // Process the raw .json file inputted in the dropzone
-    processFileInput = (files) => {
-        console.log(files);
-        const file = files[0];
-        const fr = new FileReader();
-        fr.onload = (e) => {
-            const content = JSON.parse(e.target.result);
-            const result = analyzeGroupchat(content);
+  // Process the raw .json file inputted in the dropzone
+  processFileInput = (files) => {
+      console.log(files);
+      const file = files[0];
+      const fr = new FileReader();
+      fr.onload = (e) => {
+          const content = JSON.parse(e.target.result);
+          const result = analyzeGroupchat(content);
 
-            this.setState({ results: result });
-        }
-        fr.readAsText(file);
-    }
-
-    render() {
-        return (
-            <Router>
-                <Link to="/results">RESULTS TEST</Link>
-                <Switch>
-                    <Route exact path="/">
-                        <Home onFileInput={this.processFileInput}/>
-                    </Route>
-                    <Route path="/results/:id">
-                        <Results results={this.state.results}/>
-                    </Route>
-                </Switch>
-            </Router>
-        );
-    }
-    fr.readAsText(file);
+          this.setState({ results: result });
+      }
+      fr.readAsText(file);
   }
 
   render() {
-    return (
-      <Router>
-        <Switch>
-          <Route exact path="/">
-            <Home onFileInput={this.processFileInput}/>
-          </Route>
-          <Route path="/results">
-            <Results results={this.state.results}/>
-          </Route>
-        </Switch>
-      </Router>
-    );
+      return (
+          <Router>
+              <Link to="/results">RESULTS TEST</Link>
+              <Switch>
+                  <Route exact path="/">
+                      <Home onFileInput={this.processFileInput}/>
+                  </Route>
+                  <Route path="/results/:id">
+                      <Results results={this.state.results}/>
+                  </Route>
+              </Switch>
+          </Router>
+      );
   }
 }
 
