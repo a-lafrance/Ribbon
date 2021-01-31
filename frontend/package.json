@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start-dev": "react-scripts start",
-    "start": "node main.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
