@@ -1,5 +1,5 @@
 const apiUrlDev = '127.0.0.1:8000';
-const apiUrlProd = 'gc-wrapped-api-dev.us-west-1.elasticbeanstalk.com'; // don't know yet
+const apiUrlProd = 'ribbon-api-prod.us-west-1.elasticbeanstalk.com';
 
 const apiUrl = apiUrlProd;
 
