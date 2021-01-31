@@ -4,6 +4,12 @@ import StyledDropzone from './components/StyledDropzone.js'
 import analyzeGroupchat from './analytics/analyzer.js'
 import { getResult, saveResult } from './analytics/api.js'
 
+import GeneralStats from './components/GeneralStats.js';
+import MemberStats from './components/MemberStats.js';
+import ReactionStats from './components/ReactionStats.js';
+import MessageStats from './components/MessageStats.js';
+import ChatStats from './components/ChatStats.js';
+
 import Tutorial from './components/Tutorial.js';
 import Role from './components/Role.js'
 import {
@@ -16,8 +22,9 @@ import {
 } from "react-router-dom";
 
 import './App.css';
+import './styles/Results.css';
 import './styles/PanelCard.css';
-import GeneralStats from './components/GeneralStats.js';
+
 
 class Results extends React.Component {
     constructor(props) {
@@ -27,34 +34,57 @@ class Results extends React.Component {
 
       this.state = {
         id: id,
-        result: {}
+        result: {},
+        roleComponents: []
       }
     }
 
     componentDidMount() {
       getResult(this.state.id).then(response => response.json()).then(data => {
         this.setState({result: data})
+      })
+      .then(res => {
+          this.setState({roleComponents: this.genRoles()});
       });
+    }
+
+    genRoles() {
+        let roles = this.state?.result.roles;
+        console.log("raw roles",roles);
+        console.log("objected", Object.entries(roles));
+
+        // Holds an array of the role components to display
+        let rComponents = [];
+        Object.entries(roles).forEach((val, i) => {
+            //console.log(val);
+            rComponents.push(<Role data={val} key={i}/>);
+        });
+
+        return rComponents;
     }
 
     render() {
       return (
-          <div>
-              whats up ive been routed to results @ id = {this.state.id}
+          <div className='Results'>
+            <div className='container'>
+              <h1>{this.state.result.title}</h1>
               {<GeneralStats results={this.state.result}/>}
-              {/* move the below code back up here */}
+              {<MemberStats results={this.state.result}/>}
+              <ReactionStats results={this.state.result}/>
+              <MessageStats results={this.state.result} />
+              <ChatStats results={this.state.result} />
+              {this.state.roleComponents}
+            </div>
           </div>
       );
     }
     // let roles = props.results.roles;
     // console.log("raw roles",roles);
     // console.log(Object.values(roles));
-    //
+
     // // Holds an array of the role components to display
     // let roleComponents = [];
     // for(var i in roles) roleComponents.push(<Role data={roles[i]} key={i}/>);
 
-    // temporarily moved down here
-    // {roleComponents}
 }
 export default withRouter(Results);

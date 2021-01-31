@@ -20,20 +20,16 @@ let GeneralStats = props => {
 
 
     return(
-        <div className="panelCard genStatCard">
-            <div className="genStatTitle">{title},</div>
-            <div className="genStatTitle">Summarized</div>
-            <div className="genStatCardInner">
-                <div class="normal">
-                    <div>Total Messages Sent</div>
-                    <div className="number"> {msgCount} </div>
-                </div>
-                <div class="reversed">
-                    <div>Total Reacts Given</div>
-                    <div className="number"> {reactCount} </div>
-                </div>
-            </div>
+      <div className="genStatCard">
+        <div>
+          <div className="number"> {msgCount} </div>
+          <div>Total Messages Sent</div>
         </div>
+        <div class="emphasized">
+          <div className="number"> {reactCount} </div>
+          <div>Total Reacts Given</div>
+        </div>
+      </div>
     );
 }
 
