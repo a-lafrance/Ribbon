@@ -20,10 +20,23 @@
 
 .genStatCardInner div{
   font-size: 2vw;
-  margin: auto;
+  margin-left: 1vw;
+  margin-right: 1vw;
 }
 
 .genStatCardInner .number {
+  font-size: 5vw;
+}
+
+.genStatCardInner .normal {
+  padding: 1vw 1vw;
+}
+
+.genStatCardInner .reversed {
+  padding: 1vw 1vw;
+  background-color: white;
+  border-radius: 0.2vw;
+  color: black;
   font-size: 5vw;
   margin: auto;
 }
