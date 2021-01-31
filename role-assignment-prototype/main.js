@@ -210,7 +210,7 @@ class BlabbermouthScorekeeper {
   }
 
   role() {
-    return 'Blabbermouth';
+    return 'The Blabbermouth';
   }
 }
 
@@ -251,7 +251,7 @@ class TalkerScorekeeper {
   }
 
   role() {
-    return 'Talker';
+    return 'The Talker';
   }
 }
 
@@ -283,7 +283,7 @@ class LurkerScorekeeper {
   }
 
   role() {
-    return 'Lurker';
+    return 'The Lurker';
   }
 }
 
@@ -324,7 +324,44 @@ class PhotographerScorekeeper {
   }
 
   role() {
-    return 'Photographer';
+    return 'The Photographer';
+  }
+}
+
+class EnglishTeacherScorekeeper {
+  constructor(members) {
+    this.punctuationScores = {};
+
+    for (const member of members) {
+      this.punctuationScores[member] = 0.0;
+    }
+
+    this.totalPunctuationScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.punctuationScores) {
+      var count = (temp.match(/is/g) || []).length;
+    }
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, photosSent] of Object.entries(this.photosSent)) {
+      if (photosSent > 0) {
+        scores[member] = [this.role(), photosSent / this.totalPhotos];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The English Teacher';
   }
 }
 
@@ -365,7 +402,7 @@ class ReacterScorekeeper {
   }
 
   role() {
-    return 'Reacter';
+    return 'The Reacter';
   }
 }
 
@@ -400,8 +437,9 @@ function processContent(content) {
 }
 
 // tells you whether the given string contains at least one emoji (I feel like actually counting the # per message is unnecessary)
-function contains_emoji(s) {
-  return /\p{Extended_Pictographic}/u.test(decode_utf8(s))
+function num_emojis(s) {
+  const decoded_string = decode_utf8(s)
+  return (decoded_string.match(/\p{Extended_Pictographic}/gu) || []).length
 }
 
 // returns a string that will actually be printed as the emoji
