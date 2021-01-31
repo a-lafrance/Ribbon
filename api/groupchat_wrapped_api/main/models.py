@@ -41,8 +41,11 @@ class GroupchatWrappedResult(models.Model):
         for member, role in params['roles'].items():
             result.role_set.create(member=member, role=role)
 
+        return result
+
     def json(self):
         return {
+            'id' : self.id,
             'mostFrequentTime' : [self.most_frequent_time, self.most_frequent_time_msg_count],
             'mostTotalReacts' : [self.most_total_reacts_member, self.most_total_reacts],
             'reactCounts' : {react.icon : react.count for react in self.reactcount_set.all()},
