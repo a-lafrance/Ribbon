@@ -8,14 +8,15 @@ let GeneralStats = props => {
     let msgCount;
 
     return(
-        <div className="panelCard genStatCard"> 
-            <div className="genStatTitle"> General Stats </div>
+        <div className="panelCard genStatCard">
+            <div className="genStatTitle">{},</div>
+            <div className="genStatTitle">Summarized</div>
             <div className="genStatCardInner">
-                <div> 
+                <div>
                     <div> Total Messages Sent </div>
                     <div> {msgCount} </div>
                 </div>
-                <div> 
+                <div>
                     <div> Total Word Count </div>
                     <div> {wordCount} </div>
                 </div>
