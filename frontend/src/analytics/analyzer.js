@@ -1,7 +1,15 @@
+import { areConsecutive, streakLength, OneToOneDict, numEmojis, decodeUtf8 } from './utils.js';
 
-function analyzeGroupchat(content) {
+/*
+
+How to use this code:
+
+ */
+
+
+export default function analyzeGroupchat(content) {
   let members = content.participants.map(participant => participant.name);
-  roleAssigner = new RoleAssigner(members);
+  let roleAssigner = new RoleAssigner(members);
 
   let messagesByTime = {};
 
@@ -117,51 +125,6 @@ function analyzeGroupchat(content) {
     firstMessage: firstMessage,
     roles: roleAssigner.assignRoles()
   };
-}
-
-function areConsecutive(date1, date2) {
-  let nextDate = new Date(date1.getDate() + 1);
-
-  return date1.getDate() == date2.getDate() || nextDate.getDate() == date2.getDate();
-}
-
-function streakLength(streak) {
-  let [start, end] = streak;
-  return new Date(end - start);
-}
-
-
-class OneToOneDict {
-  // A dict with keys and values that obey a 1-to-1 relationship
-
-  constructor() {
-    this.items = {};
-    this.values = new Set();
-  }
-
-  get(key) {
-    return this.items[key];
-  }
-
-  set(key, value) {
-    let prev = this.items[key];
-    this.values.delete(prev);
-
-    this.items[key] = value;
-    this.values.add(value);
-  }
-
-  hasKey(key) {
-    return (key in this.items);
-  }
-
-  hasValue(value) {
-    return this.values.has(value);
-  }
-
-  getItems() {
-    return this.items;
-  }
 }
 
 class RoleAssigner {
@@ -587,18 +550,8 @@ class SailorScorekeeper {
   }
 }
 
+// NOTE: this is for testing
 function processContent(content) {
   console.log("calculating scores for chat named '" + content.title + "'");
   console.log(analyzeGroupchat(content));
-}
-
-// tells you whether the given string contains at least one emoji (I feel like actually counting the # per message is unnecessary)
-function num_emojis(s) {
-  const decoded_string = decode_utf8(s)
-  return (decoded_string.match(/\p{Extended_Pictographic}/gu) || []).length
-}
-
-// returns a string that will actually be printed as the emoji
-function decode_utf8(s) {
-  return decodeURIComponent(escape(s));
 }
