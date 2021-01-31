@@ -5893,10 +5893,41 @@ const content = {
 
 class RoleAssigner {
   constructor(members) {
-    this.scores = {};
+    this.scorekeepers = [
+      new BlabbermouthScorekeeper(members),
+      new TalkerScorekeeper(members)
+    ];
+  }
+
+  update(message) {
+    this.scorekeepers.forEach(scorekeeper =>
+      scorekeeper.update(message)
+    );
+  }
+
+  getScores() {
+    let scores = {};
+
+    for (const scorekeeper of this.scorekeepers) {
+      for (const [member, score] of Object.entries(scorekeeper.scores())) {
+        if (!(member in scores)) {
+            scores[member] = [];
+        }
+
+        scores[member].push(score);
+      }
+    }
+
+    return scores;
+  }
+}
+
+class BlabbermouthScorekeeper {
+  constructor(members) {
+    this.messagesSent = {};
 
     for (const member of members) {
-      this.scores[member] = [new BlabbermouthScorekeeper()];
+      this.messagesSent[member] = 0.0;
     }
 
     this.totalMessages = 0.0;
@@ -5905,37 +5936,55 @@ class RoleAssigner {
   update(message) {
     let member = message["sender_name"];
 
-    if (member in this.scores) {
-      for (var scorekeeper of this.scores[member]) {
-        scorekeeper.update();
-      }
-
+    if (member in this.messagesSent) {
+      this.messagesSent[member]++;
       this.totalMessages++;
     }
   }
 
-  getScores() {
+  scores() {
     let scores = {};
 
-    for (const [member, scorekeepers] of Object.entries(this.scores)) {
-      scores[member] = scorekeepers.map(scorekeeper => scorekeeper.normalize(this.totalMessages));
+    for (const [member, messagesSent] of Object.entries(this.messagesSent)) {
+      scores[member] = ['Blabbermouth', messagesSent / this.totalMessages];
     }
 
     return scores;
   }
 }
 
-class BlabbermouthScorekeeper {
-  constructor() {
-    this.messagesSent = 0.0;
+class TalkerScorekeeper {
+  constructor(members) {
+    this.wordsSent = {};
+
+    for (const member of members) {
+      this.wordsSent[member] = 0.0;
+    }
+
+    this.totalWords = 0.0;
   }
 
   update(message) {
-    this.messagesSent++;
+    let member = message["sender_name"];
+
+    if (member in this.wordsSent) {
+      if ("content" in message) {
+        let words = message.content.split(" ").length;
+
+        this.wordsSent[member] += words;
+        this.totalWords += words;
+      }
+    }
   }
 
-  normalize(totalMessages) {
-    return ['Blabbermouth', this.messagesSent / totalMessages];
+  scores() {
+    let scores = {};
+
+    for (const [member, wordsSent] of Object.entries(this.wordsSent)) {
+      scores[member] = ['Talker', wordsSent / this.totalWords];
+    }
+
+    return scores;
   }
 }
 
