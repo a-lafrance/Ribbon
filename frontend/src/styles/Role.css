@@ -1,5 +1,6 @@
 .roleCard {
   padding: 5vmin;
+  margin: 5vmin 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -13,4 +14,16 @@ h2 {
   font-size: 48px;
   font-weight: 500;
   margin: 8px;
+}
+
+.roleRecipient {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.roleCard h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 36px;
 }

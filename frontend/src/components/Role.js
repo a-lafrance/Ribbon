@@ -38,7 +38,7 @@ let Role = props => {
           <div> {roleDesc} </div>
         </div>
         <div className="roleRecipient">
-          <div> {rolePersonName} </div>
+          <h3> {rolePersonName} </h3>
           <div> {roleStat} </div>
         </div>
       </div>
