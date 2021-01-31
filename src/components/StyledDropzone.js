@@ -21,8 +21,6 @@ const activeStyle = {
     borderColor: '#2196f3'
 };
 
-
-
 function StyledDropzone(props) {
     const {
         getRootProps,
@@ -30,7 +28,7 @@ function StyledDropzone(props) {
         isDragActive,
     } = useDropzone({
         accept: '.json',
-        onDrop: files => console.log(files),
+        onDrop: files => props.onFileInput(files),
     });
 
     const style = useMemo(() => ({
