@@ -1,4 +1,4 @@
-import { areConsecutive, streakLength, OneToOneDict, numEmojis, decodeUtf8 } from './utils.js';
+import { areConsecutive, streakLength, streakDayLength, OneToOneDict, numEmojis, decodeUtf8 } from './utils.js';
 
 /*
 
@@ -33,7 +33,11 @@ export default function analyzeGroupchat(content) {
   let longestStreak = [];
   let firstMessage = '';
 
-  let currentStreak = [];
+  let streakStartMillis = null;
+  let streakEndMillis = null;
+  let longestStreakLength = -1;
+  let longestStreakStartMillis = null;
+  let longestStreakEndMillis = null;
 
   let validMembers = new Set();
   members.forEach(member => validMembers.add(member));
@@ -43,7 +47,8 @@ export default function analyzeGroupchat(content) {
     let sender = message["sender_name"];
 
     if (validMembers.has(sender)) {
-      let date = new Date(message["timestamp_ms"]);
+      let currMillis = message["timestamp_ms"];
+      let date = new Date(currMillis);
       let time = date.getHours();
 
       messagesByTime[time]++;
@@ -70,26 +75,17 @@ export default function analyzeGroupchat(content) {
 
       // increment current streak
       // if current streak dne or it's not broken, extend it
-      if (currentStreak.length == 0) {
-        currentStreak.push(date);
+      if (areConsecutive(streakStartMillis, currMillis)) {
+        streakStartMillis = currMillis; // set start cuz it goes backwards
+      } else {
+        streakStartMillis = currMillis;
+        streakEndMillis = currMillis;
       }
-      else if (areConsecutive(currentStreak[currentStreak.length - 1], date)) {
-        // extend
-        if (currentStreak.length == 1) {
-          currentStreak.push(date);
-        }
-        else {
-          currentStreak[1] = date;
-        }
-      }
-      else {
-        // check longest
-        if (longestStreak.length == 0 || streakLength(currentStreak) > streakLength(longestStreak)) {
-          longestStreak = currentStreak;
-        }
 
-        // reset current streak (including today)
-        currentStreak = [date];
+      if (streakLength(streakStartMillis, streakEndMillis) > longestStreakLength) {
+        longestStreakStartMillis = streakStartMillis;
+        longestStreakEndMillis = streakEndMillis;
+        longestStreakLength = streakLength(streakStartMillis, streakEndMillis);
       }
 
       // set firstMessage to message content
@@ -125,7 +121,7 @@ export default function analyzeGroupchat(content) {
     mostFrequentTime: [mostFrequentTime, maxMessageCount],
     mostTotalReacts: [mostTotalReactedMember, mostTotalReacts],
     reactCounts: reactCounts,
-    longestStreak: longestStreak,
+    longestStreak: [longestStreakStartMillis, longestStreakEndMillis],
     firstMessage: firstMessage,
     roles: roleAssigner.assignRoles()
   };
