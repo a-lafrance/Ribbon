@@ -8,6 +8,39 @@
   // update however necessary
   // normalize however
 
+class OneToOneDict {
+  // A dict with keys and values that obey a 1-to-1 relationship
+
+  constructor() {
+    this.items = {};
+    this.values = new Set();
+  }
+
+  get(key) {
+    return this.items[key];
+  }
+
+  set(key, value) {
+    let prev = this.items[key];
+    this.values.delete(prev);
+
+    this.items[key] = value;
+    this.values.add(value);
+  }
+
+  hasKey(key) {
+    return (key in this.items);
+  }
+
+  hasValue(value) {
+    return this.values.has(value);
+  }
+
+  getItems() {
+    return this.items;
+  }
+}
+
 class RoleAssigner {
   constructor(members) {
     this.scorekeepers = [
@@ -73,22 +106,24 @@ class RoleAssigner {
       totals[scorekeeper.role()] = 1;
     }
 
-    let roles = {};
+    let roles = new OneToOneDict();
     let n_unassigned = Object.keys(scores).length;
 
     while (n_unassigned > 0) {
-      console.log('' + n_unassigned + ' left!');
       let [member, role, score] = this.findBestScore(scores, totals, roles);
-      roles[role] = member;
 
-      for (const [role, score] in scores[member]) {
-        totals[role] -= score;
+      if (member != null) {
+        roles.set(member, role);
+
+        for (const [role, score] in scores[member]) {
+          totals[role] -= score;
+        }
       }
 
       n_unassigned--;
     }
 
-    return roles;
+    return roles.getItems();
   }
 /*
 find_best_score(scores, totals):
@@ -120,14 +155,19 @@ find_best_score(scores, totals):
     let winningRole = null;
 
     for (const [member, memberScores] of Object.entries(scores)) {
-      for (const [role, score] of memberScores) {
-        if (!(role in roles)) {
-          let normalizedScore = score / totals[role];
+      // don't assign to members that already have a role
+      if (!roles.hasKey(member)) {
+        for (const [role, score] of memberScores) {
 
-          if (bestScore == null || normalizedScore > bestScore) {
-            bestScore = normalizedScore;
-            winner = member;
-            winningRole = role;
+          // don't assign roles that have been assigned
+          if (!roles.hasValue(role)) {
+            let normalizedScore = score / totals[role];
+
+            if (bestScore == null || normalizedScore > bestScore) {
+              bestScore = normalizedScore;
+              winner = member;
+              winningRole = role;
+            }
           }
         }
       }
