@@ -52,7 +52,7 @@ let Role = props => {
     return (
       <div className="panelCard roleCard">
         <div className="roleInfo">
-          <div className="roleTitle"> {roleTitle} </div>
+          <h2> {roleTitle} </h2>
           <div> {roleDesc} </div>
         </div>
         <div className="roleRecipient">

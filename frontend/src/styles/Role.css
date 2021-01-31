@@ -1,9 +1,16 @@
 .roleCard {
-  margin: 5vmin;
+  padding: 5vmin;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-.roleTitle {
-  font-size: xx-large;
+.roleInfo {
+  text-align: left;
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 48px;
+  font-weight: 500;
+  margin: 8px;
 }
