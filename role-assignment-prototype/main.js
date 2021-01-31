@@ -1,12 +1,135 @@
-// role assignment class:
-  // store dict of {member : [raw scorekeeper]}
-  // update by accessing scores[member] and calling role.update() for each role
-  // get final scores by mapping each raw scorekeeper to a final score using role.normalize()
 
-// role class:
-  // store internal scorekeeping
-  // update however necessary
-  // normalize however
+function analyzeGroupchat(content) {
+  let members = content.participants.map(participant => participant.name);
+  roleAssigner = new RoleAssigner(members);
+
+  let messagesByTime = {};
+
+  for (var i = 0; i < 24; i++) {
+    messagesByTime[i] = 0; // messagesByTime maps {range start : msg count}
+  }
+
+  let totalReactsByMember = {};
+
+  for (const member of members) {
+    totalReactsByMember[member] = 0;
+  }
+
+  let totalMessages = 0;
+
+  let reactCounts = {};
+  let longestStreak = [];
+  let firstMessage = '';
+
+  let currentStreak = [];
+
+  let validMembers = new Set();
+  members.forEach(member => validMembers.add(member));
+
+  for (const message of content.messages) {
+    // check time, fit to range, increment range count
+    let sender = message["sender_name"];
+
+    if (validMembers.has(sender)) {
+      let date = new Date(message["timestamp_ms"]);
+      let time = date.getHours();
+
+      messagesByTime[time]++;
+
+      // if has reacts:
+      if ("reactions" in message) {
+        let n_reacts = message.reactions.length;
+
+        // increment members' react counts
+        totalReactsByMember[sender] += n_reacts;
+
+        // increment react counts
+        for (const react of message.reactions) {
+          let icon = react.reaction;
+
+          if (icon in reactCounts) {
+            reactCounts[icon]++;
+          }
+          else {
+            reactCounts[icon] = 1;
+          }
+        }
+      }
+
+      // increment current streak
+      // if current streak dne or it's not broken, extend it
+      if (currentStreak.length == 0) {
+        currentStreak.push(date);
+      }
+      else if (areConsecutive(currentStreak[currentStreak.length - 1], date)) {
+        // extend
+        if (currentStreak.length == 1) {
+          currentStreak.push(date);
+        }
+        else {
+          currentStreak[1] = date;
+        }
+      }
+      else {
+        // check longest
+        if (longestStreak.length == 0 || streakLength(currentStreak) > streakLength(longestStreak)) {
+          longestStreak = currentStreak;
+        }
+
+        // reset current streak (including today)
+        currentStreak = [date];
+      }
+
+      // set firstMessage to message content
+      if ("content" in message)
+        firstMessage = message.content;
+
+      roleAssigner.update(message);
+    }
+  }
+
+  // find most frequent time, most total reacts
+  let mostFrequentTime = -1;
+  let maxMessageCount = -1;
+
+  for (const [time, messageCount] of Object.entries(messagesByTime)) {
+    if (messageCount > maxMessageCount) {
+      mostFrequentTime = time;
+      maxMessageCount = messageCount;
+    }
+  }
+
+  let mostTotalReacts = -1;
+  let mostTotalReactedMember = '';
+
+  for (const [member, reacts] of Object.entries(totalReactsByMember)) {
+    if (reacts > mostTotalReacts) {
+      mostTotalReacts = reacts;
+      mostTotalReactedMember = member;
+    }
+  }
+
+  return {
+    mostFrequentTime: [mostFrequentTime, maxMessageCount],
+    mostTotalReacts: [mostTotalReactedMember, mostTotalReacts],
+    reactCounts: reactCounts,
+    longestStreak: longestStreak,
+    firstMessage: firstMessage,
+    roles: roleAssigner.assignRoles()
+  };
+}
+
+function areConsecutive(date1, date2) {
+  let nextDate = new Date(date1.getDate() + 1);
+
+  return date1.getDate() == date2.getDate() || nextDate.getDate() == date2.getDate();
+}
+
+function streakLength(streak) {
+  let [start, end] = streak;
+  return new Date(end - start);
+}
+
 
 class OneToOneDict {
   // A dict with keys and values that obey a 1-to-1 relationship
@@ -50,6 +173,7 @@ class RoleAssigner {
       new PhotographerScorekeeper(members),
       new ReacterScorekeeper(members),
       new EnglishTeacherScorekeeper(members),
+      new SailorScorekeeper(members),
     ];
   }
 
@@ -63,42 +187,22 @@ class RoleAssigner {
     let scores = {};
 
     for (const scorekeeper of this.scorekeepers) {
-      for (const [member, score] of Object.entries(scorekeeper.scores())) {
-        if (!(member in scores)) {
-            scores[member] = [];
-        }
+      if (scorekeeper.valid()) {
+        for (const [member, score] of Object.entries(scorekeeper.scores())) {
+          if (!(member in scores)) {
+              scores[member] = [];
+          }
 
-        scores[member].push(score);
+          scores[member].push(score);
+        }
+      } else {
+        console.log('scorekeeper is not valid')
       }
     }
 
     return scores;
   }
 
-  /*
-  assign_roles(scores, totals):
-  where scores = {person : [(role, score)]}
-  and totals = {role : total score}, totals[role] = 1 initially for all roles
-
-  roles = {}
-  n_people = len(scores)
-  n_assigned = 0
-
-  # find the best overall match, ie the person who best "dominates" a role
-  # repeat until no more people are unassigned
-  while n_assigned < n_people:
-    # find the person who best "dominates" a role
-    person, role, score = find_best_score(scores, totals)
-
-    # assign that role to that person
-    roles[person] = role
-
-    # subtract their score from the total for the role
-    for role, score in scores[person]:
-      totals[role] -= score
-
-  return roles
-  */
   assignRoles() {
     let scores = this.getScores();
     let totals = {};
@@ -126,29 +230,6 @@ class RoleAssigner {
 
     return roles.getItems();
   }
-/*
-find_best_score(scores, totals):
-  # init to defaults
-  best_score = -inf
-  winner = nil
-  winning_role = nil
-
-  # for each (person, role) combination, find the one that produces the best normalized score
-  for person in scores:
-    for role, raw_score in scores[person]:
-      # raw_score is the score relative to a 0...1 scale
-      # normalized_score is raw_score normalized to remaining total score
-      normalized_score = raw_score / totals[role]
-
-      # if this is the best option, overwrite the previous best
-      if normalized_score > best_score:
-        best_score = normalized_score
-        winner = person
-        winning_role = role
-
-  # return winner & associated values
-  return winner, winning_role, totals[winning_role] * best_score
-  */
 
   findBestScore(scores, totals, roles) {
     let bestScore = null;
@@ -198,6 +279,10 @@ class BlabbermouthScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -239,6 +324,10 @@ class TalkerScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -263,6 +352,10 @@ class LurkerScorekeeper {
 
   update(message) {
     this.inverse.update(message);
+  }
+
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
   }
 
   scores() {
@@ -312,6 +405,10 @@ class PhotographerScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -326,54 +423,6 @@ class PhotographerScorekeeper {
 
   role() {
     return 'The Photographer';
-  }
-}
-
-class EnglishTeacherScorekeeper {
-  COMMA_WEIGHT = 1;
-  PERIOD_WEIGHT = 5;
-  SEMICOLON_WEIGHT = 10;
-
-  constructor(members) {
-    this.punctuationScores = {};
-
-    for (const member of members) {
-      this.punctuationScores[member] = 0.0;
-    }
-
-    this.totalPunctuationScore = 0.0;
-  }
-
-  update(message) {
-    let member = message["sender_name"];
-    let scoreIncrement = 0.0;
-
-    if (member in this.punctuationScores) {
-      if ("content" in message) {
-        const commaCount = ((message["content"]).match(/[A-Za-z],\s/g) || []).length;
-        const periodCount = ((message["content"]).match(/[A-Za-z].(\s|$)/g) || []).length;
-        const semicolonCount = ((message["content"]).match(/[A-Za-z];\s/g) || []).length;
-        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.PERIOD_WEIGHT * periodCount + this.SEMICOLON_WEIGHT * semicolonCount;
-        this.punctuationScores[member] += scoreIncrement;
-        this.totalPunctuationScore += scoreIncrement;
-      }
-    }
-  }
-
-  scores() {
-    let scores = {};
-
-    for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
-      if (punctuationScore > 0) {
-        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
-      }
-    }
-
-    return scores;
-  }
-
-  role() {
-    return 'The English Teacher';
   }
 }
 
@@ -401,6 +450,10 @@ class ReacterScorekeeper {
     }
   }
 
+  valid() {
+    return this.totalReacts > 10;
+  }
+
   scores() {
     let scores = {};
 
@@ -418,34 +471,125 @@ class ReacterScorekeeper {
   }
 }
 
+class EnglishTeacherScorekeeper {
+  COMMA_WEIGHT = 1;
+  SEMICOLON_WEIGHT = 3;
+
+  constructor(members) {
+    this.punctuationScores = {};
+
+    for (const member of members) {
+      this.punctuationScores[member] = 0.0;
+    }
+
+    this.totalPunctuationScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.punctuationScores) {
+      if ("content" in message) {
+        const content = message["content"]
+        const commaCount = (content.match(/[A-Za-z],\s/g) || []).length;
+        const semicolonCount = (content.match(/[A-Za-z];\s/g) || []).length;
+        // no period counts because all "CMO changed the nickname of Kevin Xu to CFO"
+
+        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.SEMICOLON_WEIGHT * semicolonCount;
+        this.punctuationScores[member] += scoreIncrement;
+        this.totalPunctuationScore += scoreIncrement;
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalPunctuationScore > 100;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
+      if (punctuationScore > 0) {
+        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The English Teacher';
+  }
+}
+
+class SailorScorekeeper {
+  SWEAR_WEIGHTS = {
+    'shit': 1,
+    'bitch': 1,
+    '\bass\b': 1,
+    'cunt': 1,
+    'fuck': 1,
+    'motherfuck': 1, // motherfuck contains fuck, so really it's 1 + 1 = 2
+  };
+
+  constructor(members) {
+    this.swearScores = {};
+
+    for (const member of members) {
+      this.swearScores[member] = 0.0;
+    }
+
+    this.totalSwearScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.swearScores) {
+      if ('content' in message) {
+        const content = message['content']
+
+        for (const word in this.SWEAR_WEIGHTS) {
+          const regex = new RegExp(`${word}`, 'gi')
+          const wordCount = (content.match(regex) || []).length;
+          scoreIncrement += this.SWEAR_WEIGHTS[word] * wordCount;
+        }
+
+        this.swearScores[member] += scoreIncrement;
+        this.totalSwearScore += scoreIncrement;
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalSwearScore > 10;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, swearScore] of Object.entries(this.swearScores)) {
+      if (swearScore > 0) {
+        scores[member] = [this.role(), swearScore / this.totalSwearScore];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The Sailor';
+  }
+}
+
 function processContent(content) {
   console.log("calculating scores for chat named '" + content.title + "'");
-
-  members = content.participants.map(participant => participant.name);
-  console.log("members: " + members);
-
-  let roleAssigner = new RoleAssigner(members);
-  // var times = 1;
-  //
-  // for (const member of members) {
-  //   for (var i = 0; i < times; i++) {
-  //     roleAssigner.update(member);
-  //   }
-  //
-  //   times += 1;
-  // }
-
-  // for each message in the json:
-  for (const message of content.messages) {
-    roleAssigner.update(message);
-  }
-    // update for sender
-
-  console.log(roleAssigner.getScores());
-
-  console.log('Final results:');
-  console.log(roleAssigner.assignRoles());
-  console.log('');
+  console.log(analyzeGroupchat(content));
 }
 
 // tells you whether the given string contains at least one emoji (I feel like actually counting the # per message is unnecessary)
