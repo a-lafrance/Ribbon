@@ -9,7 +9,7 @@ class GroupchatWrappedResult(models.Model):
     total_reacts = models.IntegerField()
 
     most_frequent_time = models.IntegerField()
-    most_frequent_time_total_msgs = models.IntegerField()
+    most_frequent_time_msg_count = models.IntegerField()
 
     most_total_reacts_member = models.CharField(max_length=utils.MEMBER_MAX_LEN)
     most_total_reacts = models.IntegerField()
@@ -24,7 +24,7 @@ class GroupchatWrappedResult(models.Model):
         total_msgs = int(params['totalMessages'])
         total_reacts = int(params['totalReacts'])
 
-        most_frequent_time, most_frequent_time_total_msgs = params['mostFrequentTime']
+        most_frequent_time, most_frequent_time_msg_count = params['mostFrequentTime']
         most_total_reacts_member, most_total_reacts = params['mostTotalReacts']
 
         longest_streak_start, longest_streak_end = params['longestStreak']
@@ -38,7 +38,7 @@ class GroupchatWrappedResult(models.Model):
             total_msgs=total_msgs,
             total_reacts=total_reacts,
             most_frequent_time=most_frequent_time,
-            most_frequent_time_total_msgs=most_frequent_time_total_msgs,
+            most_frequent_time_msg_count=most_frequent_time_msg_count,
             most_total_reacts_member=most_total_reacts_member,
             most_total_reacts=most_total_reacts,
             longest_streak_start=longest_streak_start,
@@ -63,7 +63,7 @@ class GroupchatWrappedResult(models.Model):
             'title' : self.title,
             'totalMessages' : self.total_msgs,
             'totalReacts' : self.total_reacts,
-            'mostFrequentTime' : [self.most_frequent_time, self.most_frequent_time_total_msgs],
+            'mostFrequentTime' : [self.most_frequent_time, self.most_frequent_time_msg_count],
             'mostTotalReacts' : [self.most_total_reacts_member, self.most_total_reacts],
             'reactCounts' : {react.index : (react.icon, react.count) for react in self.reactcount_set.all()},
             'wordCounts' : {word.index : (word.word, word.count) for word in self.wordcount_set.all()},
