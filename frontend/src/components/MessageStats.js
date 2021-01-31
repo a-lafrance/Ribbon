@@ -8,16 +8,16 @@ let MessageStats = props => {
     let longestStreakEnd;
     let firstMessage;
 
-    if (Object.keys(props.results).length > 0) { 
+    if (Object.keys(props.results).length > 0) {
         longestStreakStart = new Date(props.results['longestStreak'][0]);
-        longestStreakStart = longestStreakStart.getMonth() + "-" + longestStreakStart.getDay() + "-" + longestStreakStart.getFullYear();
+        longestStreakStart = (longestStreakStart.getMonth() + 1) + "/" + longestStreakStart.getDay() + "/" + longestStreakStart.getFullYear();
         longestStreakEnd = new Date(props.results['longestStreak'][1]);
-        longestStreakEnd = longestStreakEnd.getMonth() + "-" + longestStreakEnd.getDay() + "-" + longestStreakEnd.getFullYear();
+        longestStreakEnd = (longestStreakEnd.getMonth() + 1) + "/" + longestStreakEnd.getDay() + "/" + longestStreakEnd.getFullYear();
         firstMessage = props.results['firstMessage'];
     }
 
     return(
-        <div className="panelCard"> 
+        <div className="panelCard">
             <div> Longest streak: {longestStreakStart} to {longestStreakEnd}</div>
             <div> First recorded message: {firstMessage}</div>
         </div>

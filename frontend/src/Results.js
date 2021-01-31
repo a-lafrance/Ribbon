@@ -69,11 +69,11 @@ class Results extends React.Component {
           <div className='Results'>
             <div className='container'>
               <h1>{this.state.result.title}</h1>
-              {<GeneralStats results={this.state.result}/>}
-              {<MemberStats results={this.state.result}/>}
+              <GeneralStats results={this.state.result}/>
+              {/*<MemberStats results={this.state.result}/>
               <ReactionStats results={this.state.result}/>
               <MessageStats results={this.state.result} />
-              <ChatStats results={this.state.result} />
+              <ChatStats results={this.state.result} />*/}
               {this.state.roleComponents}
             </div>
           </div>
