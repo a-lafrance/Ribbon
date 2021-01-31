@@ -14,7 +14,8 @@ class RoleAssigner {
       new BlabbermouthScorekeeper(members),
       new TalkerScorekeeper(members),
       new LurkerScorekeeper(members),
-      new PhotographerScorekeeper(members)
+      new PhotographerScorekeeper(members),
+      new ReacterScorekeeper(members)
     ];
   }
 
@@ -65,7 +66,9 @@ class BlabbermouthScorekeeper {
     let scores = {};
 
     for (const [member, messagesSent] of Object.entries(this.messagesSent)) {
-      scores[member] = ['Blabbermouth', messagesSent / this.totalMessages];
+      if (messagesSent > 0) {
+        scores[member] = ['Blabbermouth', messagesSent / this.totalMessages];
+      }
     }
 
     return scores;
@@ -100,7 +103,9 @@ class TalkerScorekeeper {
     let scores = {};
 
     for (const [member, wordsSent] of Object.entries(this.wordsSent)) {
-      scores[member] = ['Talker', wordsSent / this.totalWords];
+      if (wordsSent > 0) {
+        scores[member] = ['Talker', wordsSent / this.totalWords];
+      }
     }
 
     return scores;
@@ -163,7 +168,46 @@ class PhotographerScorekeeper {
     let scores = {};
 
     for (const [member, photosSent] of Object.entries(this.photosSent)) {
-      scores[member] = ['Photographer', photosSent / this.totalPhotos];
+      if (photosSent > 0) {
+        scores[member] = ['Photographer', photosSent / this.totalPhotos];
+      }
+    }
+
+    return scores;
+  }
+}
+
+class ReacterScorekeeper {
+  constructor(members) {
+    this.reactsMade = {};
+
+    for (const member of members) {
+      this.reactsMade[member] = 0.0;
+    }
+
+    this.totalReacts = 0.0;
+  }
+
+  update(message) {
+    if ("reactions" in message) {
+      for (const react of message.reactions) {
+        let member = react.actor;
+
+        if (member in this.reactsMade) {
+          this.reactsMade[member]++;
+          this.totalReacts++;
+        }
+      }
+    }
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, reactsMade] of Object.entries(this.reactsMade)) {
+      if (reactsMade > 0) {
+        scores[member] = ['Reacter', reactsMade / this.totalReacts];
+      }
     }
 
     return scores;
