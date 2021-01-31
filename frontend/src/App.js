@@ -1,10 +1,16 @@
 import React from 'react';
 import StyledDropzone from './components/StyledDropzone.js'
 import analyzeGroupchat from './analytics/analyzer.js'
+import Tutorial from './components/Tutorial.js';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 
 import './App.css';
 import './styles/PanelCard.css'
-import Tutorial from './components/Tutorial.js';
 
 class App extends React.Component {
 
@@ -35,16 +41,40 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="App">
-                <header className="App-header">
-                    <h1> Messenger Wrapped</h1>
-                </header>
-                <StyledDropzone onFileInput={this.processFileInput} />
-                <Tutorial/>
-            </div>
+            <Router>
+                <Switch>
+                    <Route exact path="/">
+                        <Home onFileInput={this.processFileInput}/>
+                    </Route>
+                    <Route path="/results">
+                        <Results />
+                    </Route>
+                </Switch>
+            </Router>
         );
     }
 
 }
 
 export default App;
+
+function Home(props) {
+    return (
+        <div className="App">
+            <header className="App-header">
+                <h1> Messenger Wrapped</h1>
+            </header>
+            <StyledDropzone onFileInput={props.onFileInput}/>
+            <Tutorial />
+        </div>
+    );
+}
+
+function Results() {
+    return (
+        <div>
+            whats up ive been routed
+        </div>
+    );
+}
+
