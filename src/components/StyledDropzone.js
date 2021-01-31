@@ -21,19 +21,6 @@ const activeStyle = {
     borderColor: '#2196f3'
 };
 
-function processFileInput(files) {
-    console.log(files);
-    const file = files[0]; 
-    const fr = new FileReader();
-    fr.onload = function (e) {
-        const content = JSON.parse(e.target.result);
-        //processContent(content)
-        // Import Arthur's js processing and call it here
-        console.log(content);
-    }
-    fr.readAsText(file);
-}
-
 function StyledDropzone(props) {
     const {
         getRootProps,
@@ -41,7 +28,7 @@ function StyledDropzone(props) {
         isDragActive,
     } = useDropzone({
         accept: '.json',
-        onDrop: files => processFileInput(files),
+        onDrop: files => props.onFileInput(files),
     });
 
     const style = useMemo(() => ({
