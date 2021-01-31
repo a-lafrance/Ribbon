@@ -2,15 +2,23 @@
 
 let MemberStats = props => {
 
-    let freqTime;
-    let mostContributor;
-    let leastContributor;
+    let freqTimeStart;
+    let freqTimeEnd;
     let mostReacted;
-    let leastReacted;
+    let mostReactedStats;
+
+    // sometimes the prop is null since the state is a little messed up
+    if (Object.keys(props.results).length > 0) {
+        freqTimeStart = props.results['mostFrequentTime'][0];
+        freqTimeEnd = props.results['mostFrequentTime'][1];
+        mostReacted = props.results['mostTotalReacts'][0];
+        mostReactedStats = props.results['mostTotalReacts'][1]; 
+    }
 
     return(
         <div className="panelCard"> 
-            I am member stats
+            <div> Most frequent conversation time: {freqTimeStart} to {freqTimeEnd}  </div>
+            <div> Most reacted: {mostReacted}, with {mostReactedStats} </div>
         </div>
     );
 }
