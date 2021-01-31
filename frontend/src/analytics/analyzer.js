@@ -172,25 +172,32 @@ class RoleAssigner {
 
   assignRoles() {
     let scores = this.getScores();
+    console.log('scores')
+    console.log(scores)
     let totals = {};
 
     for (const scorekeeper of this.scorekeepers) {
-      totals[scorekeeper.role()] = 1;
+      const roleNames = scorekeeper.role()
+      const canonicalRole = roleNames[0]
+      totals[canonicalRole] = 1;
     }
 
-    let roles = new OneToOneDict();
+    let roleAssignments = new OneToOneDict();
     let outputRolesData = new OneToOneDict();
     let n_unassigned = Object.keys(scores).length;
 
     while (n_unassigned > 0) {
-      let [member, role, score, displayData] = this.findBestScore(scores, totals, roles);
+      let [member, canonicalRole, displayRole, score, displayData] = this.findBestScore(scores, totals, roleAssignments);
 
       if (member != null) {
-        roles.set(member, role);
-        outputRolesData.set(member, [role, displayData])
+        roleAssignments.set(member, canonicalRole);
+        outputRolesData.set(member, [displayRole, displayData])
 
-        for (const [role, score, displayData] in scores[member]) {
-          totals[role] -= score;
+        for (const [roleNames, score, displayData] in scores[member]) {
+          const canonicalRole = roleNames[0]
+          totals[canonicalRole] -= score;
+          console.log('totals')
+          console.log(totals)
         }
       }
 
@@ -200,25 +207,28 @@ class RoleAssigner {
     return outputRolesData.getItems();
   }
 
-  findBestScore(scores, totals, roles) {
+  findBestScore(scores, totals, roleAssignments) {
     let bestScore = null;
     let winner = null;
-    let winningRole = null;
+    let winningCanonicalRole = null;
+    let winningDisplayRole = null;
     let bestDisplayData = null;
 
     for (const [member, memberScores] of Object.entries(scores)) {
       // don't assign to members that already have a role
-      if (!roles.hasKey(member)) {
-        for (const [role, score, displayData] of memberScores) {
+      if (!roleAssignments.hasKey(member)) {
+        for (const [roleNames, score, displayData] of memberScores) {
+          const canonicalRole = roleNames[0]
 
-          // don't assign roles that have been assigned
-          if (!roles.hasValue(role)) {
-            let normalizedScore = score / totals[role];
+          // don't assign roles that have been assigned twice
+          if (roleAssignments.valueCount(canonicalRole) < 2) {
+            let normalizedScore = score / totals[canonicalRole];
 
             if (bestScore == null || normalizedScore > bestScore) {
               bestScore = normalizedScore;
               winner = member;
-              winningRole = role;
+              winningCanonicalRole = canonicalRole;
+              winningDisplayRole = roleNames[roleAssignments.valueCount(canonicalRole)];
               bestDisplayData = displayData;
             }
           }
@@ -226,7 +236,7 @@ class RoleAssigner {
       }
     }
 
-    return [winner, winningRole, totals[winningRole] * bestScore, bestDisplayData]
+    return [winner, winningCanonicalRole, winningDisplayRole, totals[winningCanonicalRole] * bestScore, bestDisplayData]
   }
 }
 
@@ -268,7 +278,7 @@ class BlabbermouthScorekeeper {
   }
 
   role() {
-    return 'The Blabbermouth';
+    return ['The Blabbermouth', 'The Blabbertooth'];
   }
 }
 
@@ -314,7 +324,7 @@ class TalkerScorekeeper {
   }
 
   role() {
-    return 'The Talker';
+    return ['The Word Wizard', 'The Alphabet Apprentice'];
   }
 }
 
@@ -352,7 +362,7 @@ class LurkerScorekeeper {
   }
 
   role() {
-    return 'The Lurker';
+    return ['The Stone', 'The Pebble'];
   }
 }
 
@@ -398,7 +408,7 @@ class PhotographerScorekeeper {
   }
 
   role() {
-    return 'The Photographer';
+    return ['The Photographer', 'The Amateur Photographer'];
   }
 }
 
@@ -444,7 +454,7 @@ class ReacterScorekeeper {
   }
 
   role() {
-    return 'The Reacter';
+    return ['The Reactor', 'The Encourager'];
   }
 }
 
@@ -499,7 +509,7 @@ class EnglishTeacherScorekeeper {
   }
 
   role() {
-    return 'The English Teacher';
+    return ['The English Teacher', 'The English TA'];
   }
 }
 
@@ -562,6 +572,6 @@ class SailorScorekeeper {
   }
 
   role() {
-    return 'The Sailor';
+    return ['The Sailor', 'The First Mate'];
   }
 }
