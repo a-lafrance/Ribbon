@@ -63,12 +63,16 @@ class RoleAssigner {
     let scores = {};
 
     for (const scorekeeper of this.scorekeepers) {
-      for (const [member, score] of Object.entries(scorekeeper.scores())) {
-        if (!(member in scores)) {
-            scores[member] = [];
-        }
+      if (scorekeeper.valid()) {
+        for (const [member, score] of Object.entries(scorekeeper.scores())) {
+          if (!(member in scores)) {
+              scores[member] = [];
+          }
 
-        scores[member].push(score);
+          scores[member].push(score);
+        }
+      } else {
+        console.log('scorekeeper is not valid')
       }
     }
 
@@ -198,6 +202,10 @@ class BlabbermouthScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -239,6 +247,10 @@ class TalkerScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -263,6 +275,10 @@ class LurkerScorekeeper {
 
   update(message) {
     this.inverse.update(message);
+  }
+
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
   }
 
   scores() {
@@ -312,6 +328,10 @@ class PhotographerScorekeeper {
     }
   }
 
+  valid() {
+    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
+  }
+
   scores() {
     let scores = {};
 
@@ -331,8 +351,7 @@ class PhotographerScorekeeper {
 
 class EnglishTeacherScorekeeper {
   COMMA_WEIGHT = 1;
-  PERIOD_WEIGHT = 5;
-  SEMICOLON_WEIGHT = 10;
+  SEMICOLON_WEIGHT = 3;
 
   constructor(members) {
     this.punctuationScores = {};
@@ -351,13 +370,20 @@ class EnglishTeacherScorekeeper {
     if (member in this.punctuationScores) {
       if ("content" in message) {
         const commaCount = ((message["content"]).match(/[A-Za-z],\s/g) || []).length;
-        const periodCount = ((message["content"]).match(/[A-Za-z].(\s|$)/g) || []).length;
         const semicolonCount = ((message["content"]).match(/[A-Za-z];\s/g) || []).length;
-        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.PERIOD_WEIGHT * periodCount + this.SEMICOLON_WEIGHT * semicolonCount;
+        // no period counts because all "CMO changed the nickname of Kevin Xu to CFO"
+
+        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.SEMICOLON_WEIGHT * semicolonCount;
         this.punctuationScores[member] += scoreIncrement;
         this.totalPunctuationScore += scoreIncrement;
       }
     }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    console.log('tps: ' + this.totalPunctuationScore)
+    return this.totalPunctuationScore > 100;
   }
 
   scores() {
@@ -399,6 +425,10 @@ class ReacterScorekeeper {
         }
       }
     }
+  }
+
+  valid() {
+    return this.totalReacts > 10;
   }
 
   scores() {
