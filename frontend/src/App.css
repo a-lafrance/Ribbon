@@ -2,11 +2,22 @@
   text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
-.App-header {
-  background-color: #282c34;
+.App .hero {
+  width: 70vw;
+}
+
+h1 {
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: 72px;
+  font-weight: 300;
+  background: linear-gradient(83.84deg, #0088FF -6.87%, #A033FF 26.54%, #FF5C87 58.58%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h1 .bolded {
+  font-weight: 500;
 }

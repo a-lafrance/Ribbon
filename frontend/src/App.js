@@ -62,11 +62,11 @@ export default App;
 function Home(props) {
     return (
         <div className="App">
-            <header className="App-header">
-                <h1> Messenger Wrapped</h1>
-            </header>
+          <div className="hero">
+            <h1>Groupchat <span className="bolded">Wrapped</span></h1>
             <StyledDropzone onFileInput={props.onFileInput}/>
             <Tutorial />
+          </div>
         </div>
     );
 }
@@ -79,4 +79,3 @@ function Results(props) {
         </div>
     );
 }
-
