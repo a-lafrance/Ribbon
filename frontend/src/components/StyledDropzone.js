@@ -7,6 +7,7 @@ const baseStyle = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '40px 20px 40px 20px',
+    margin: '12px',
     backgroundColor: 'rgba(255, 92, 135, 0.2)',
     color: '#bdbdbd',
     outline: 'none',

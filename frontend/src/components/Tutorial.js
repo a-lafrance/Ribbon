@@ -34,10 +34,8 @@ class Tutorial extends React.Component {
 
     return(
       <div className="tutorialPanel">
-        <h1> How to Export Your Messenger Data</h1>
-        <div className="stepPanelH">
-          <span> Go to</span>
-          <a href="https://www.facebook.com/dyi">https://www.facebook.com/dyi</a>
+        <h3> How to Export Your Messenger Data</h3>
+        <div className="buttons">
           <button onClick={this.decrement}>Previous</button>
           <button onClick={this.increment.bind(this, steps.length)}>Next</button>
         </div>
