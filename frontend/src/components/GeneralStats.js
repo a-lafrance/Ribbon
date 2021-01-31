@@ -29,8 +29,8 @@ let GeneralStats = props => {
                     <div className="number"> {msgCount} </div>
                 </div>
                 <div>
-                    <div>Most Consecutive Days</div>
-                    <div className="number"> {longestStreak} </div>
+                    <div>Total Reacts Given</div>
+                    <div className="number"> {reactCount} </div>
                 </div>
             </div>
         </div>
