@@ -6,7 +6,7 @@ import json
 
 def index(request: HttpRequest):
     if request.method == 'GET':
-        return HttpResponse('Groupchat Wrapped API Home', status=200)
+        return HttpResponse('Ribbon API Home', status=200)
 
 def get_result(request: HttpRequest, id: int):
     if request.method == 'GET':
