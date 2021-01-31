@@ -134,13 +134,14 @@ export default function analyzeGroupchat(content) {
 class RoleAssigner {
   constructor(members) {
     this.scorekeepers = [
-      new BlabbermouthScorekeeper(members),
       new TalkerScorekeeper(members),
       new LurkerScorekeeper(members),
       new PhotographerScorekeeper(members),
       new ReacterScorekeeper(members),
       new EnglishTeacherScorekeeper(members),
       new SailorScorekeeper(members),
+      new EmojiScorekeeper(members),
+      new NamerScorekeeper(members),
     ];
   }
 
@@ -172,8 +173,6 @@ class RoleAssigner {
 
   assignRoles() {
     let scores = this.getScores();
-    console.log('scores')
-    console.log(scores)
     let totals = {};
 
     for (const scorekeeper of this.scorekeepers) {
@@ -196,8 +195,6 @@ class RoleAssigner {
         for (const [roleNames, score, displayData] in scores[member]) {
           const canonicalRole = roleNames[0]
           totals[canonicalRole] -= score;
-          console.log('totals')
-          console.log(totals)
         }
       }
 
@@ -237,48 +234,6 @@ class RoleAssigner {
     }
 
     return [winner, winningCanonicalRole, winningDisplayRole, totals[winningCanonicalRole] * bestScore, bestDisplayData]
-  }
-}
-
-class BlabbermouthScorekeeper {
-  constructor(members) {
-    this.messagesSent = {};
-
-    for (const member of members) {
-      this.messagesSent[member] = 0.0;
-    }
-
-    this.totalMessages = 0.0;
-  }
-
-  update(message) {
-    let member = message["sender_name"];
-
-    if (member in this.messagesSent) {
-      this.messagesSent[member]++;
-      this.totalMessages++;
-    }
-  }
-
-  valid() {
-    return true; // cuz it's based on messages, and if you don't even have messages then you have nothing
-  }
-
-  scores() {
-    let scores = {};
-
-    for (const [member, messagesSent] of Object.entries(this.messagesSent)) {
-      if (messagesSent > 0) {
-        const percent = messagesSent / this.totalMessages;
-        scores[member] = [this.role(), percent, percent];
-      }
-    }
-
-    return scores;
-  }
-
-  role() {
-    return ['The Blabbermouth', 'The Blabbertooth'];
   }
 }
 
@@ -343,7 +298,6 @@ class LurkerScorekeeper {
 
   scores() {
     let scores = this.inverse.scores();
-    console.log(scores)
     let totalScore = 0.0;
 
     for (const [role, score] of Object.entries(scores)) {
@@ -573,5 +527,107 @@ class SailorScorekeeper {
 
   role() {
     return ['The Sailor', 'The First Mate'];
+  }
+}
+
+class EmojiScorekeeper {
+  constructor(members) {
+    this.emojiAmounts = {};
+
+    for (const member of members) {
+      this.emojiAmounts[member] = 0.0;
+    }
+
+    this.totalEmojiAmount = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let amountIncrement = 0.0;
+
+    if (member in this.emojiAmounts) {
+      if ('content' in message) {
+        const content = message['content'];
+        amountIncrement = numEmojis(content);
+
+        this.emojiAmounts[member] += amountIncrement;
+        this.totalEmojiAmount += amountIncrement
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalEmojiAmount > 5;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, emojiAmount] of Object.entries(this.emojiAmounts)) {
+      if (emojiAmount > 0) {
+        const percent = emojiAmount / this.totalEmojiAmount;
+        scores[member] = [this.role(), percent, percent];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return ['The Emoji Spammer', 'The Emoji Poweruser'];
+  }
+}
+
+class NamerScorekeeper {
+  constructor(members) {
+    this.nameAmounts = {};
+
+    for (const member of members) {
+      this.nameAmounts[member] = 0.0;
+    }
+
+    this.totalNameAmount = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let amountIncrement = 0.0;
+
+    if (member in this.nameAmounts) {
+      if ('content' in message) {
+        const content = message['content'];
+
+        if (/set\sthe\snickname\sfor/.test(content)) {
+          amountIncrement = 1.0;
+        } else if (/set\syour\snickname\sto/.test(content)) {
+          amountIncrement = 1.0;
+        }
+
+        this.nameAmounts[member] += amountIncrement;
+        this.totalNameAmount += amountIncrement
+      }
+    }
+  }
+
+  valid() {
+    return this.totalNameAmount > 3;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, nameAmount] of Object.entries(this.nameAmounts)) {
+      if (nameAmount > 0) {
+        const percent = nameAmount / this.totalNameAmount;
+        scores[member] = [this.role(), percent, percent];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return ['The Name Author', 'The Name Editor'];
   }
 }
