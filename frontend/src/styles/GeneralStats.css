@@ -1,0 +1,18 @@
+.genStatCard {
+    display: flex;
+    flex-direction: column;
+}
+
+.genStatTitle {
+    font-size:xx-large;
+}
+
+.genStatCardInner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.genStatCardInner div{
+    font-size: larger;
+    
+}
