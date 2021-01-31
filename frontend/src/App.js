@@ -11,6 +11,7 @@ import {
 
 import './App.css';
 import './styles/PanelCard.css'
+import GeneralStats from './components/GeneralStats.js';
 
 class App extends React.Component {
 
@@ -47,7 +48,7 @@ class App extends React.Component {
                         <Home onFileInput={this.processFileInput}/>
                     </Route>
                     <Route path="/results">
-                        <Results />
+                        <Results results={this.state.results}/>
                     </Route>
                 </Switch>
             </Router>
@@ -70,10 +71,11 @@ function Home(props) {
     );
 }
 
-function Results() {
+function Results(props) {
     return (
         <div>
-            whats up ive been routed
+            whats up ive been routed to results
+            <GeneralStats results={props.results}/>
         </div>
     );
 }
