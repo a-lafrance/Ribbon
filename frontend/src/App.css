@@ -1,3 +1,9 @@
+:root {
+  --blue: 0, 136, 255;
+  --purple: 160, 51, 255;
+  --pink: 255, 92, 135;
+}
+
 .App {
   text-align: center;
   display: flex;
@@ -15,7 +21,7 @@ h1 {
   justify-content: center;
   font-size: 72px;
   font-weight: 300;
-  background: linear-gradient(83.84deg, #0088FF -6.87%, #A033FF 26.54%, #FF5C87 58.58%);
+  background: linear-gradient(83.84deg, rgb(var(--blue)) -6.87%, rgb(var(--purple)) 26.54%, rgb(var(--pink)) 58.58%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
