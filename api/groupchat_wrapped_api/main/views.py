@@ -1,6 +1,8 @@
 from django.http import HttpRequest, HttpResponse, JsonResponse
-
+from django.views.decorators.csrf import csrf_exempt
 from . import models
+
+import json
 
 def index(request: HttpRequest):
     if request.method == 'GET':
@@ -15,7 +17,13 @@ def get_result(request: HttpRequest, id: int):
         except models.GroupchatWrappedResult.DoesNotExist:
             return HttpResponse('not found', status=404)
 
+@csrf_exempt
 def save_result(request: HttpRequest):
     if request.method == 'POST':
-        # save result into db
-        pass
+        params = json.loads(request.body)
+
+        try:
+            models.GroupchatWrappedResult.create_from_json(params)
+            return HttpResponse('success', status=200)
+        except KeyError:
+            return HttpResponse('invalid params', status=400)

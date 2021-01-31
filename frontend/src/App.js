@@ -2,11 +2,13 @@ import React from 'react';
 import StyledDropzone from './components/StyledDropzone.js'
 import analyzeGroupchat from './analytics/analyzer.js'
 import Tutorial from './components/Tutorial.js';
+import Role from './components/Role.js'
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
+    useParams
 } from "react-router-dom";
 
 import './App.css';
@@ -30,11 +32,8 @@ class App extends React.Component {
         const fr = new FileReader();
         fr.onload = (e) => {
             const content = JSON.parse(e.target.result);
-            //processContent(content)
-            // Import Arthur's js processing and call it here
-            console.log(content);
             const result = analyzeGroupchat(content);
-            console.log(result);
+
             this.setState({ results: result });
         }
         fr.readAsText(file);
@@ -43,11 +42,12 @@ class App extends React.Component {
     render() {
         return (
             <Router>
+                <Link to="/results">RESULTS TEST</Link>
                 <Switch>
                     <Route exact path="/">
                         <Home onFileInput={this.processFileInput}/>
                     </Route>
-                    <Route path="/results">
+                    <Route path="/results/:id">
                         <Results results={this.state.results}/>
                     </Route>
                 </Switch>
@@ -72,11 +72,21 @@ function Home(props) {
 }
 
 function Results(props) {
+    let { id } = useParams();
+
+    let roles = props.results.roles;
+    console.log("raw roles",roles);
+    console.log(Object.values(roles));
+
+    // Holds an array of the role components to display
+    let roleComponents = [];
+    for(var i in roles) roleComponents.push(<Role data={roles[i]} key={i}/>);
+
     return (
         <div>
-            whats up ive been routed to results
+            whats up ive been routed to results @ id = {id}
             <GeneralStats results={props.results}/>
+            {roleComponents}
         </div>
     );
 }
-
