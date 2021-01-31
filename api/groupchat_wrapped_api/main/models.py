@@ -35,7 +35,7 @@ class GroupchatWrappedResult(models.Model):
             first_msg=first_msg
         )
 
-        for icon, count in params['reactCounts'].items():
+        for icon, count in params['reactCounts']:
             result.reactcount_set.create(icon=icon, count=count)
 
         for member, role in params['roles'].items():

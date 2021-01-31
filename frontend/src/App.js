@@ -45,7 +45,7 @@ export class App extends React.Component {
             )
         }
         fr.readAsText(file);
-    }
+    };
 
     render() {
         if (this.state.resultID > 0) {
@@ -57,19 +57,35 @@ export class App extends React.Component {
           );
         }
     }
-
 }
 
-function Home(props) {
+class Home extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      displayTutorial: false
+    }
+  }
+
+  toggleTutorial = () => {
+    this.setState({ displayTutorial: !this.state.displayTutorial });
+  }
+
+  render() {
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1> Messenger Wrapped</h1>
-            </header>
-            <StyledDropzone onFileInput={props.onFileInput}/>
-            <Tutorial />
+      <div className="App">
+        <div className="container">
+          <h1>Groupchat <span className="bolded">Wrapped</span></h1>
+          <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</h3>
+          <StyledDropzone onFileInput={this.props.onFileInput}/>
+          <button onClick={this.toggleTutorial}>{this.state.displayTutorial ? 'Hide' : 'Show'} tutorial</button>
+          {this.state.displayTutorial && <Tutorial />}
         </div>
+      </div>
     );
+  }
+
 }
 
 export function Results(props) {
@@ -94,3 +110,5 @@ export function Results(props) {
     // <GeneralStats results={props.results}/>
     // {roleComponents}
 }
+
+export default App;
