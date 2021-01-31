@@ -11,7 +11,8 @@ const baseStyle = {
     color: '#bdbdbd',
     outline: 'none',
     transition: 'background .1s',
-    fontSize: 'calc(5px + 2vmin)'
+    fontSize: 'calc(5px + 2vmin)',
+    borderRadius: '4px'
 };
 
 const activeStyle = {
