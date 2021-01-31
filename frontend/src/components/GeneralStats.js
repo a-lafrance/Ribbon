@@ -6,7 +6,7 @@ let GeneralStats = props => {
     let msgCount;
 
     return(
-        <div className="panelCard"> 
+        <div className="panelCard">
             I am general stats
         </div>
     );
