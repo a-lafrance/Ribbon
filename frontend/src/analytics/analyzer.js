@@ -188,6 +188,7 @@ export default function analyzeGroupchat(content) {
   sortedMessagesByMember = sortedMessagesByMember.slice(0, 10);
 
   return {
+    title: content.title,
     mostFrequentTime: [mostFrequentTime, maxMessageCount],
     mostTotalReacts: [mostTotalReactedMember, mostTotalReacts],
     reactCounts: sortedReactCounts,

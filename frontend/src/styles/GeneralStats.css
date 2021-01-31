@@ -1,10 +1,12 @@
 .genStatCard {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .genStatTitle {
-    font-size:xx-large;
+    font-size: 50pt;
+    display: flex;
 }
 
 .genStatCardInner {
@@ -14,5 +16,5 @@
 
 .genStatCardInner div{
     font-size: larger;
-    
+
 }

@@ -16,7 +16,7 @@ import {
 } from "react-router-dom";
 
 import './App.css';
-import './styles/PanelCard.css'
+import './styles/PanelCard.css';
 import GeneralStats from './components/GeneralStats.js';
 
 class Results extends React.Component {
@@ -33,7 +33,7 @@ class Results extends React.Component {
 
     componentDidMount() {
       getResult(this.state.id).then(response => response.json()).then(data => {
-        this.setState({ result: data})
+        this.setState({result: data})
       });
     }
 
