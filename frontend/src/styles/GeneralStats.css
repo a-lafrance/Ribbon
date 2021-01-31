@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: none;
 }
 
 .genStatTitle {
@@ -12,17 +13,17 @@
 }
 
 .genStatCardInner {
-  margin-top: 3vw;
+  margin-top: 5vw;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
 .genStatCardInner div{
-  font-size: 1.5vw;
+  font-size: 2vw;
   margin: auto;
 }
 
 .genStatCardInner .number {
-  font-size: 4vw;
+  font-size: 5vw;
   margin: auto;
 }
