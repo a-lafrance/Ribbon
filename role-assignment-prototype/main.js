@@ -13,7 +13,8 @@ class RoleAssigner {
     this.scorekeepers = [
       new BlabbermouthScorekeeper(members),
       new TalkerScorekeeper(members),
-      new QuietestScorekeeper(members)
+      new LurkerScorekeeper(members),
+      new PhotographerScorekeeper(members)
     ];
   }
 
@@ -106,7 +107,7 @@ class TalkerScorekeeper {
   }
 }
 
-class QuietestScorekeeper {
+class LurkerScorekeeper {
   constructor(members) {
     this.inverse = new TalkerScorekeeper(members);
   }
@@ -120,7 +121,7 @@ class QuietestScorekeeper {
     let totalScore = 0.0;
 
     for (const [member, score] of Object.entries(scores)) {
-      score[0] = 'Quiet One';
+      score[0] = 'Lurker';
       score[1] = 1.0 - score[1];
 
       totalScore += score[1];
@@ -128,6 +129,41 @@ class QuietestScorekeeper {
 
     for (const score of Object.values(scores)) {
       score[1] /= totalScore;
+    }
+
+    return scores;
+  }
+}
+
+class PhotographerScorekeeper {
+  constructor(members) {
+    this.photosSent = {};
+
+    for (const member of members) {
+      this.photosSent[member] = 0.0;
+    }
+
+    this.totalPhotos = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+
+    if (member in this.photosSent) {
+      if ("photos" in message) {
+        let photos = message.photos.length;
+
+        this.photosSent[member] += photos;
+        this.totalPhotos += photos;
+      }
+    }
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, photosSent] of Object.entries(this.photosSent)) {
+      scores[member] = ['Photographer', photosSent / this.totalPhotos];
     }
 
     return scores;
