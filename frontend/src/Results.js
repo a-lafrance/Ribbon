@@ -34,7 +34,6 @@ class Results extends React.Component {
     componentDidMount() {
       getResult(this.state.id).then(response => response.json()).then(data => {
         this.setState({ result: data})
-        console.log(data)
       });
     }
 
