@@ -1,0 +1,15 @@
+.roleCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.roleTitle {
+    font-size: larger;
+
+}
+
+.roleCardInner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
