@@ -21,6 +21,7 @@ export default function analyzeGroupchat(content) {
     messagesByTime[i] = 0; // messagesByTime maps {range start : msg count}
   }
 
+  let totalReacts = 0;
   let totalReactsByMember = {};
   let totalMessages = 0;
   let totalMessagesByMember = {};
@@ -86,6 +87,8 @@ export default function analyzeGroupchat(content) {
           else {
             reactCounts[icon] = 1;
           }
+
+          totalReacts++;
         }
       }
 
@@ -188,12 +191,14 @@ export default function analyzeGroupchat(content) {
   sortedMessagesByMember = sortedMessagesByMember.slice(0, 10);
 
   return {
+    title: content.title,
     mostFrequentTime: [mostFrequentTime, maxMessageCount],
     mostTotalReacts: [mostTotalReactedMember, mostTotalReacts],
     reactCounts: sortedReactCounts,
     wordCounts: sortedWordCounts,
     longestStreak: [longestStreakStartMillis, longestStreakEndMillis],
     firstMessage: firstMessage,
+    totalReacts: totalReacts,
     totalMessages: totalMessages,
     totalMessagesByMember: sortedMessagesByMember,
     roles: roleAssigner.assignRoles()
