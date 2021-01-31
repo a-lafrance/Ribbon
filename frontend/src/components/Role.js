@@ -32,8 +32,8 @@ let Role = props => {
         'The Amateur Photographer': [photo2, 'Does a phone really count as a camera?', '% of total photos sent'],
         'The Reactor': [reactor1, 'Definitely reflective of their true personality. I mean, just look at them.', '% of total reacts given'],
         'The Encourager': [reactor2, 'Everyone just needs a little encouragement. Thanks.', '% of total reacts given'],
-        'The English Teacher': [english1, 'Only sliiightly pretentious. I swear. Please.', '% of total number of commas and semicolons'],
-        'The English TA': [english2, 'What do you think they had to do to get here? Wait, dont answer that.', '% of total number of commas and semicolons'],
+        'The English Teacher': [english1, 'I love semicolons. I dressed up as a semicolon for Halloween.', '% of total number of commas and semicolons'],
+        'The English TA': [english2, 'I was a comma, and the other TA was a period. We had to explain it a lot.', '% of total number of commas and semicolons'],
         'The Sailor': [sailor1, 'F--- f--- f--- f--- sh-- f--- sh-- b---- f--- -----------------', '% of total swear words'],
         'The First Mate': [sailor2, 'Potty mouth in training. Mouth is probably full of shit right now.', '% of total swear words'],
         'The Emoji Spammer': [emoji1, '😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂', '% of total emojis sent'],
@@ -51,7 +51,7 @@ let Role = props => {
 
     return (
         <div className="panelCard roleCard">
-            
+
             <div className="roleCardInner">
                 <div>
                     <img className="roleIcon" src={roleIcon} />
