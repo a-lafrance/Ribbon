@@ -48,7 +48,8 @@ class RoleAssigner {
       new TalkerScorekeeper(members),
       new LurkerScorekeeper(members),
       new PhotographerScorekeeper(members),
-      new ReacterScorekeeper(members)
+      new ReacterScorekeeper(members),
+      new EnglishTeacherScorekeeper(members),
     ];
   }
 
@@ -329,6 +330,10 @@ class PhotographerScorekeeper {
 }
 
 class EnglishTeacherScorekeeper {
+  COMMA_WEIGHT = 1;
+  PERIOD_WEIGHT = 5;
+  SEMICOLON_WEIGHT = 10;
+
   constructor(members) {
     this.punctuationScores = {};
 
@@ -344,16 +349,23 @@ class EnglishTeacherScorekeeper {
     let scoreIncrement = 0.0;
 
     if (member in this.punctuationScores) {
-      var count = (temp.match(/is/g) || []).length;
+      if ("content" in message) {
+        const commaCount = ((message["content"]).match(/[A-Za-z],\s/g) || []).length;
+        const periodCount = ((message["content"]).match(/[A-Za-z].(\s|$)/g) || []).length;
+        const semicolonCount = ((message["content"]).match(/[A-Za-z];\s/g) || []).length;
+        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.PERIOD_WEIGHT * periodCount + this.SEMICOLON_WEIGHT * semicolonCount;
+        this.punctuationScores[member] += scoreIncrement;
+        this.totalPunctuationScore += scoreIncrement;
+      }
     }
   }
 
   scores() {
     let scores = {};
 
-    for (const [member, photosSent] of Object.entries(this.photosSent)) {
-      if (photosSent > 0) {
-        scores[member] = [this.role(), photosSent / this.totalPhotos];
+    for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
+      if (punctuationScore > 0) {
+        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
       }
     }
 
