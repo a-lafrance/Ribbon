@@ -6,7 +6,8 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
+    useParams
 } from "react-router-dom";
 
 import './App.css';
@@ -30,11 +31,8 @@ class App extends React.Component {
         const fr = new FileReader();
         fr.onload = (e) => {
             const content = JSON.parse(e.target.result);
-            //processContent(content)
-            // Import Arthur's js processing and call it here
-            console.log(content);
             const result = analyzeGroupchat(content);
-            console.log(result);
+            
             this.setState({ results: result });
         }
         fr.readAsText(file);
@@ -47,7 +45,7 @@ class App extends React.Component {
                     <Route exact path="/">
                         <Home onFileInput={this.processFileInput}/>
                     </Route>
-                    <Route path="/results">
+                    <Route path="/results/:id">
                         <Results results={this.state.results}/>
                     </Route>
                 </Switch>
@@ -72,11 +70,12 @@ function Home(props) {
 }
 
 function Results(props) {
+    let { id } = useParams();
+
     return (
         <div>
-            whats up ive been routed to results
+            whats up ive been routed to results @ id = {id}
             <GeneralStats results={props.results}/>
         </div>
     );
 }
-
