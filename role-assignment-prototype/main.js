@@ -12,7 +12,8 @@ class RoleAssigner {
   constructor(members) {
     this.scorekeepers = [
       new BlabbermouthScorekeeper(members),
-      new TalkerScorekeeper(members)
+      new TalkerScorekeeper(members),
+      new QuietestScorekeeper(members)
     ];
   }
 
@@ -99,6 +100,34 @@ class TalkerScorekeeper {
 
     for (const [member, wordsSent] of Object.entries(this.wordsSent)) {
       scores[member] = ['Talker', wordsSent / this.totalWords];
+    }
+
+    return scores;
+  }
+}
+
+class QuietestScorekeeper {
+  constructor(members) {
+    this.inverse = new TalkerScorekeeper(members);
+  }
+
+  update(message) {
+    this.inverse.update(message);
+  }
+
+  scores() {
+    let scores = this.inverse.scores();
+    let totalScore = 0.0;
+
+    for (const [member, score] of Object.entries(scores)) {
+      score[0] = 'Quiet One';
+      score[1] = 1.0 - score[1];
+
+      totalScore += score[1];
+    }
+
+    for (const score of Object.values(scores)) {
+      score[1] /= totalScore;
     }
 
     return scores;
