@@ -16,6 +16,14 @@ class Tutorial extends React.Component {
     }
   }
 
+  increment = (numSteps) => {
+    this.setState({stepNumber: Math.min(numSteps, this.state.stepNumber + 1)});
+  }
+
+  decrement = () => {
+    this.setState({stepNumber: Math.max(1, this.state.stepNumber - 1)});
+  }
+
   render() {
     let steps = [
       <StepPanel description='"Deselect All" and then select "Messages"' image={step1} />,
@@ -27,10 +35,14 @@ class Tutorial extends React.Component {
     return(
       <div className="tutorialPanel">
         <h1> How to Export Your Messenger Data</h1>
-      <div className="stepPanelH">
-        <span> Go to</span>
-        <a href="https://www.facebook.com/dyi">https://www.facebook.com/dyi</a>
-      </div>{steps[this.state.stepNumber - 1]}</div>
+        <div className="stepPanelH">
+          <span> Go to</span>
+          <a href="https://www.facebook.com/dyi">https://www.facebook.com/dyi</a>
+          <button onClick={this.decrement}>Previous</button>
+          <button onClick={this.increment.bind(this, steps.length)}>Next</button>
+        </div>
+        {steps[this.state.stepNumber - 1]}
+      </div>
     );
   }
 
