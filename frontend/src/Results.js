@@ -16,6 +16,7 @@ import {
 } from "react-router-dom";
 
 import './App.css';
+import './styles/Results.css';
 import './styles/PanelCard.css';
 import GeneralStats from './components/GeneralStats.js';
 
@@ -45,7 +46,7 @@ class Results extends React.Component {
         let roles = this.state?.result.roles;
         console.log("raw roles",roles);
         console.log("objected", Object.entries(roles));
-    
+
         // Holds an array of the role components to display
         let rComponents = [];
         Object.entries(roles).forEach((val, i) => {
@@ -53,22 +54,25 @@ class Results extends React.Component {
             rComponents.push(<Role data={val} key={i}/>);
         });
 
-        return rComponents;        
+        return rComponents;
     }
 
     render() {
       return (
-          <div>
+          <div className='Results'>
+            <div className='container'>
               whats up ive been routed to results @ id = {this.state.id}
+              <h1>{this.state.result.title}</h1>
               {<GeneralStats results={this.state.result}/>}
               {this.state.roleComponents}
+            </div>
           </div>
       );
     }
     // let roles = props.results.roles;
     // console.log("raw roles",roles);
     // console.log(Object.values(roles));
-    
+
     // // Holds an array of the role components to display
     // let roleComponents = [];
     // for(var i in roles) roleComponents.push(<Role data={roles[i]} key={i}/>);

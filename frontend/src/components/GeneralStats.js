@@ -21,7 +21,6 @@ let GeneralStats = props => {
 
     return(
         <div className="panelCard genStatCard">
-            <div className="genStatTitle">{title},</div>
             <div className="genStatTitle">Summarized</div>
             <div className="genStatCardInner">
                 <div class="normal">

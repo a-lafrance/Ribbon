@@ -1,0 +1,12 @@
+.Results {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.Results .container {
+  width: 70vw;
+}
