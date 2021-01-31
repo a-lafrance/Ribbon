@@ -1,7 +1,7 @@
 .genStatCard {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  color: rgba(255, 92, 135, 0.6);
+  color: rgba(var(--pink), 0.6);
   padding-bottom: 32px;
 }
 
@@ -15,6 +15,6 @@
 }
 
 .genStatCard .emphasized {
-  color: rgba(255, 92, 135, 0.9);
+  color: rgba(var(--pink), 0.9);
   margin: auto;
 }

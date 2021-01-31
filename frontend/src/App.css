@@ -1,9 +1,3 @@
-:root {
-  --blue: 0, 136, 255;
-  --purple: 160, 51, 255;
-  --pink: 255, 92, 135;
-}
-
 .App {
   text-align: center;
   display: flex;

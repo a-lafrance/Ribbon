@@ -1,4 +1,19 @@
+:root {
+  --panelCard-alpha: 0.05
+}
+
 .panelCard {
-    background-color: rgb(21,21,21);
-    color: white;
+  color: white;
+}
+
+.panelCard.blue {
+  background-color: rgba(var(--blue), var(--panelCard-alpha));
+}
+
+.panelCard.purple {
+  background-color: rgba(var(--purple), var(--panelCard-alpha));
+}
+
+.panelCard.pink {
+  background-color: rgba(var(--pink), var(--panelCard-alpha));
 }

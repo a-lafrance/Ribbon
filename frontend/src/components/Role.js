@@ -32,14 +32,14 @@ let Role = props => {
     let roleStat = (props.data[1][1]*100).toPrecision(3) + roleDict[props.data[1][0]][2];
 
     return (
-      <div className="panelCard roleCard">
+      <div className={`panelCard ${props.color} roleCard`}>
         <div className="roleInfo">
           <h2>{roleIcon} {roleTitle}</h2>
-          <div> {roleDesc} </div>
+          <div className="roleDesc"> {roleDesc} </div>
         </div>
         <div className="roleRecipient">
           <h3> {rolePersonName} </h3>
-          <div> {roleStat} </div>
+          <div className="roleStat"> {roleStat} </div>
         </div>
       </div>
     );

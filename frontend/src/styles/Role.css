@@ -1,3 +1,10 @@
+:root {
+  --roleTitle-alpha: 0.8;
+  --roleDesc-alpha: 0.6;
+  --rolePersonName-alpha: 1;
+  --roleStat-alpha: 0.6;
+}
+
 .roleCard {
   padding: 5vmin;
   margin: 5vmin 0;
@@ -15,6 +22,61 @@ h2 {
   font-weight: 500;
   margin: 8px;
 }
+
+.blue h2 {
+  color: rgba(var(--blue), var(--roleTitle-alpha));
+}
+
+.purple h2 {
+  color: rgba(var(--purple), var(--roleTitle-alpha));
+}
+
+.pink h2 {
+  color: rgba(var(--pink), var(--roleTitle-alpha));
+}
+
+
+.blue .roleDesc {
+  color: rgba(var(--blue), var(--roleDesc-alpha));
+}
+
+.purple .roleDesc {
+  color: rgba(var(--purple), var(--roleDesc-alpha));
+}
+
+.pink .roleDesc {
+  color: rgba(var(--pink), var(--roleDesc-alpha));
+}
+
+
+.blue .roleRecipient h3 {
+  color: rgba(var(--blue), var(--rolePersonName-alpha));
+}
+
+.purple .roleRecipient h3 {
+  color: rgba(var(--purple), var(--rolePersonName-alpha));
+}
+
+.pink .roleRecipient h3 {
+  color: rgba(var(--pink), var(--rolePersonName-alpha));
+}
+
+
+.blue .roleStat {
+  color: rgba(var(--blue), var(--roleStat-alpha));
+}
+
+.purple .roleStat {
+  color: rgba(var(--purple), var(--roleStat-alpha));
+}
+
+.pink .roleStat {
+  color: rgba(var(--pink), var(--roleStat-alpha));
+}
+
+
+
+
 
 .roleRecipient {
   display: flex;

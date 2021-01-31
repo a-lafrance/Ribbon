@@ -50,6 +50,7 @@ class Results extends React.Component {
 
     genRoles() {
         let roles = this.state?.result.roles;
+        let colors = ['blue', 'purple', 'pink'];
         console.log("raw roles",roles);
         console.log("objected", Object.entries(roles));
 
@@ -57,7 +58,7 @@ class Results extends React.Component {
         let rComponents = [];
         Object.entries(roles).forEach((val, i) => {
             //console.log(val);
-            rComponents.push(<Role data={val} key={i}/>);
+            rComponents.push(<Role data={val} key={i} color={colors[i % 3]}/>);
         });
 
         return rComponents;
