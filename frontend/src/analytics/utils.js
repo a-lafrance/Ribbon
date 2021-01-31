@@ -1,12 +1,14 @@
-export function areConsecutive(date1, date2) {
-  let nextDate = new Date(date1.getDate() + 1);
-
-  return date1.getDate() == date2.getDate() || nextDate.getDate() == date2.getDate();
+export function areConsecutive(millis1, millis2) {
+  return Math.abs(millis1 - millis2) < 24 * 60 * 60 * 1000;
 }
 
-export function streakLength(streak) {
-  let [start, end] = streak;
-  return new Date(end - start);
+export function streakLength(start, end) {
+  const length = Math.abs(end - start);
+  return length;
+}
+
+export function streakDayLength(start, end) {
+  return streakLength(start, end) / (24 * 60 * 60 * 1000);
 }
 
 
