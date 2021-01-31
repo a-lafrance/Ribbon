@@ -2,11 +2,13 @@ import React from 'react';
 import StyledDropzone from './components/StyledDropzone.js'
 import analyzeGroupchat from './analytics/analyzer.js'
 import Tutorial from './components/Tutorial.js';
+import Role from './components/Role.js'
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useParams
 } from "react-router-dom";
 
 import './App.css';
@@ -23,19 +25,34 @@ class App extends React.Component {
     }
   }
 
-  // Process the raw .json file inputted in the dropzone
-  processFileInput = (files) => {
-    console.log(files);
-    const file = files[0];
-    const fr = new FileReader();
-    fr.onload = (e) => {
-      const content = JSON.parse(e.target.result);
-      //processContent(content)
-      // Import Arthur's js processing and call it here
-      console.log(content);
-      const result = analyzeGroupchat(content);
-      console.log(result);
-      this.setState({ results: result });
+    // Process the raw .json file inputted in the dropzone
+    processFileInput = (files) => {
+        console.log(files);
+        const file = files[0];
+        const fr = new FileReader();
+        fr.onload = (e) => {
+            const content = JSON.parse(e.target.result);
+            const result = analyzeGroupchat(content);
+
+            this.setState({ results: result });
+        }
+        fr.readAsText(file);
+    }
+
+    render() {
+        return (
+            <Router>
+                <Link to="/results">RESULTS TEST</Link>
+                <Switch>
+                    <Route exact path="/">
+                        <Home onFileInput={this.processFileInput}/>
+                    </Route>
+                    <Route path="/results/:id">
+                        <Results results={this.state.results}/>
+                    </Route>
+                </Switch>
+            </Router>
+        );
     }
     fr.readAsText(file);
   }
@@ -72,10 +89,21 @@ function Home(props) {
 }
 
 function Results(props) {
-  return (
-    <div>
-      whats up ive been routed to results
-      <GeneralStats results={props.results}/>
-    </div>
-  );
+    let { id } = useParams();
+
+    let roles = props.results.roles;
+    console.log("raw roles",roles);
+    console.log(Object.values(roles));
+
+    // Holds an array of the role components to display
+    let roleComponents = [];
+    for(var i in roles) roleComponents.push(<Role data={roles[i]} key={i}/>);
+
+    return (
+        <div>
+            whats up ive been routed to results @ id = {id}
+            <GeneralStats results={props.results}/>
+            {roleComponents}
+        </div>
+    );
 }
