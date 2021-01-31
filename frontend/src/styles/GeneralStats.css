@@ -1,20 +1,28 @@
 .genStatCard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .genStatTitle {
-    font-size: 50pt;
-    display: flex;
+  margin-top: 3vw;
+  font-size: 7vw;
+  line-height: 5vw;
+  display: flex;
 }
 
 .genStatCardInner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  margin-top: 3vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .genStatCardInner div{
-    font-size: larger;
+  font-size: 1.5vw;
+  margin: auto;
+}
 
+.genStatCardInner .number {
+  font-size: 4vw;
+  margin: auto;
 }

@@ -4,31 +4,31 @@ import '../styles/GeneralStats.css';
 let GeneralStats = props => {
 
     let chatName;
-    let wordCount = '';
+    let longestStreak = '';
     let msgCount = '';
     let title = '';
 
     console.log(props.results)
 
     if (Object.keys(props.results).length > 0) {
-      wordCount = '' + props.results.mostTotalReacts[0] + ': ' + props.results.mostTotalReacts[1];
-      msgCount = '' + props.results.mostFrequentTime[0] + ': ' + props.results.mostFrequentTime[1];
+      longestStreak = Math.round(Math.abs(props.results.longestStreak[0] - props.results.longestStreak[1]) / (24 * 60 * 60 * 1000));
+      msgCount = props.results.mostFrequentTime[1];
       title = props.results.title;
     }
 
 
     return(
         <div className="panelCard genStatCard">
-            <div className="genStatTitle">{title},</div>
+            <div className="genStatTitle">Chat Title,</div>
             <div className="genStatTitle">Summarized</div>
             <div className="genStatCardInner">
                 <div>
                     <div> Total Messages Sent </div>
-                    <div> {msgCount} </div>
+                    <div className="number"> {msgCount} </div>
                 </div>
                 <div>
-                    <div> Total Word Count </div>
-                    <div> {wordCount} </div>
+                    <div> Longest Streak </div>
+                    <div className="number"> {longestStreak} </div>
                 </div>
             </div>
         </div>
