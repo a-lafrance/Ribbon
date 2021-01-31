@@ -13,8 +13,8 @@ class GroupchatWrappedResult(models.Model):
     most_total_reacts_member = models.CharField(max_length=utils.MEMBER_MAX_LEN)
     most_total_reacts = models.IntegerField()
 
-    longest_streak_start = models.DateField()
-    longest_streak_end = models.DateField()
+    longest_streak_start = models.PositiveBigIntegerField()
+    longest_streak_end = models.PositiveBigIntegerField()
 
     first_msg = models.CharField(max_length=utils.MSG_MAX_LEN)
 
@@ -26,8 +26,8 @@ class GroupchatWrappedResult(models.Model):
         most_total_reacts_member, most_total_reacts = params['mostTotalReacts']
 
         longest_streak_start, longest_streak_end = params['longestStreak']
-        longest_streak_start = datetime.date.fromisoformat(longest_streak_start)
-        longest_streak_end = datetime.date.fromisoformat(longest_streak_end)
+        longest_streak_start = int(longest_streak_start)
+        longest_streak_end = int(longest_streak_end)
 
         first_msg = params['firstMessage']
 
@@ -63,7 +63,7 @@ class GroupchatWrappedResult(models.Model):
             'mostTotalReacts' : [self.most_total_reacts_member, self.most_total_reacts],
             'reactCounts' : {react.index : (react.icon, react.count) for react in self.reactcount_set.all()},
             'wordCounts' : {word.index : (word.word, word.count) for word in self.wordcount_set.all()},
-            'longestStreak' : [self.longest_streak_start.isoformat(), self.longest_streak_end.isoformat()],
+            'longestStreak' : [self.longest_streak_start, self.longest_streak_end],
             'firstMessage' : self.first_msg,
             'roles' : {role.member : [role.role, role.score] for role in self.role_set.all()}
         }
