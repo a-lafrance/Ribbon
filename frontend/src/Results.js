@@ -19,6 +19,8 @@ import './App.css';
 import './styles/Results.css';
 import './styles/PanelCard.css';
 import GeneralStats from './components/GeneralStats.js';
+import MemberStats from './components/MemberStats.js';
+import ReactionStats from './components/ReactionStats.js';
 
 class Results extends React.Component {
     constructor(props) {
@@ -50,7 +52,7 @@ class Results extends React.Component {
         // Holds an array of the role components to display
         let rComponents = [];
         Object.entries(roles).forEach((val, i) => {
-            console.log(val);
+            //console.log(val);
             rComponents.push(<Role data={val} key={i}/>);
         });
 
@@ -64,6 +66,8 @@ class Results extends React.Component {
               whats up ive been routed to results @ id = {this.state.id}
               <h1>{this.state.result.title}</h1>
               {<GeneralStats results={this.state.result}/>}
+              {<MemberStats results={this.state.result}/>}
+              <ReactionStats results={this.state.result}/>
               {this.state.roleComponents}
             </div>
           </div>
