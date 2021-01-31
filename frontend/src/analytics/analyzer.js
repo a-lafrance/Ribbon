@@ -2,7 +2,11 @@ import { areConsecutive, streakLength, OneToOneDict, numEmojis, decodeUtf8 } fro
 
 /*
 
-How to use this code:
+  How to use this code:
+
+  To find the Groupchat Wrapped results for a group chat, call analyzeGroupchat(), passing in
+  the JSON content read from the `message_1.json` file that the user uploads. The result that's returned
+  will contain all results for the Groupchat Wrapped (see the dictionary on lines 124-131 for full documentation).
 
  */
 
