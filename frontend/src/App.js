@@ -1,6 +1,9 @@
 import React from 'react';
 import StyledDropzone from './components/StyledDropzone.js'
+
 import analyzeGroupchat from './analytics/analyzer.js'
+import { getResult, saveResult } from './analytics/api.js'
+
 import Tutorial from './components/Tutorial.js';
 import Role from './components/Role.js'
 import {
@@ -21,7 +24,7 @@ class App extends React.Component {
         super(props);
         // Tracks the processed message_1.json results
         this.state = {
-            results: "",
+            resultID: -1
         }
     }
 
@@ -34,7 +37,7 @@ class App extends React.Component {
             const content = JSON.parse(e.target.result);
             const result = analyzeGroupchat(content);
 
-            this.setState({ results: result });
+            saveResult(result).then()
         }
         fr.readAsText(file);
     }
