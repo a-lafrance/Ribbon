@@ -7,18 +7,15 @@ const baseStyle = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '40px 20px 40px 20px',
-    borderWidth: 5,
-    borderColor: '#cccccc',
-    borderStyle: 'dashed',
-    backgroundColor: '#fafafa',
+    backgroundColor: 'rgba(255, 92, 135, 0.2)',
     color: '#bdbdbd',
     outline: 'none',
-    transition: 'border .24s ease-in-out',
+    transition: 'background .1s',
     fontSize: 'calc(5px + 2vmin)'
 };
 
 const activeStyle = {
-    borderColor: '#2196f3'
+    backgroundColor: 'rgba(255, 92, 135, 0.4)',
 };
 
 function StyledDropzone(props) {
