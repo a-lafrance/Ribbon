@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { App, Results } from './App.js';
+import App from './App.js';
+import Results from './Results.js';
 import reportWebVitals from './reportWebVitals';
 import analyzeGroupchat from './analytics/analyzer.js';
 import {

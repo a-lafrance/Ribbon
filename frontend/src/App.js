@@ -12,14 +12,14 @@ import {
     Route,
     Link,
     Redirect,
-    useParams
+    withRouter
 } from "react-router-dom";
 
 import './App.css';
 import './styles/PanelCard.css'
 import GeneralStats from './components/GeneralStats.js';
 
-export class App extends React.Component {
+export default class App extends React.Component {
 
     constructor(props) {
         super(props);
@@ -87,28 +87,3 @@ class Home extends React.Component {
   }
 
 }
-
-export function Results(props) {
-    let { id } = useParams();
-
-    // let roles = props.results.roles;
-    // console.log("raw roles",roles);
-    // console.log(Object.values(roles));
-    //
-    // // Holds an array of the role components to display
-    // let roleComponents = [];
-    // for(var i in roles) roleComponents.push(<Role data={roles[i]} key={i}/>);
-
-    return (
-        <div>
-            whats up ive been routed to results @ id = {id}
-            {/* move the below code back up here */}
-        </div>
-    );
-
-    // temporarily moved down here
-    // <GeneralStats results={props.results}/>
-    // {roleComponents}
-}
-
-export default App;

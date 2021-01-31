@@ -38,8 +38,8 @@ class GroupchatWrappedResult(models.Model):
         for icon, count in params['reactCounts']:
             result.reactcount_set.create(icon=icon, count=count)
 
-        for member, role in params['roles'].items():
-            result.role_set.create(member=member, role=role)
+        for member, (role, score) in params['roles'].items():
+            result.role_set.create(member=member, role=role, score=score)
 
         return result
 
@@ -51,7 +51,7 @@ class GroupchatWrappedResult(models.Model):
             'reactCounts' : {react.icon : react.count for react in self.reactcount_set.all()},
             'longestStreak' : [self.longest_streak_start.isoformat(), self.longest_streak_end.isoformat()],
             'firstMessage' : self.first_msg,
-            'roles' : {role.member : role.role for role in self.role_set.all()}
+            'roles' : {role.member : [role.role, role.score] for role in self.role_set.all()}
         }
 
 class ReactCount(models.Model):
@@ -65,3 +65,4 @@ class Role(models.Model):
 
     member = models.CharField(max_length=utils.MEMBER_MAX_LEN)
     role = models.CharField(max_length=utils.ROLE_MAX_LEN)
+    score = models.FloatField()
