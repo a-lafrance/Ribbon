@@ -1,7 +1,7 @@
 .tutorialPanel {
     display: flex;
     flex-direction: column;
-    font-size: calc(2px + 2vmin);
+    font-size: 16px;
 }
 
 .stepImg {
@@ -15,4 +15,8 @@
     flex-direction: column;
     justify-content: center;
     margin: 5vmin;
+}
+
+button {
+  cursor: pointer;
 }

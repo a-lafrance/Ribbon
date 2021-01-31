@@ -24,13 +24,13 @@ let GeneralStats = props => {
             <div className="genStatTitle">{title},</div>
             <div className="genStatTitle">Summarized</div>
             <div className="genStatCardInner">
-                <div>
+                <div class="normal">
                     <div>Total Messages Sent</div>
                     <div className="number"> {msgCount} </div>
                 </div>
-                <div>
-                    <div>Most Consecutive Days</div>
-                    <div className="number"> {longestStreak} </div>
+                <div class="reversed">
+                    <div>Total Reacts Given</div>
+                    <div className="number"> {reactCount} </div>
                 </div>
             </div>
         </div>

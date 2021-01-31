@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 .App .container {
@@ -20,4 +22,16 @@ h1 {
 
 h1 .bolded {
   font-weight: 500;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+button {
+  margin-top: 1.5vw;
+  background: none;
+  border: none;
+  color: rgba(250, 250, 255, 0.7);
+  font-size: 18px;
 }

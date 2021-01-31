@@ -26,3 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
+
+# python venv
+**/venv/**/*
+*.pyc
