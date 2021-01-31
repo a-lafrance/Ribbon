@@ -50,6 +50,7 @@ class RoleAssigner {
       new PhotographerScorekeeper(members),
       new ReacterScorekeeper(members),
       new EnglishTeacherScorekeeper(members),
+      new SailorScorekeeper(members),
     ];
   }
 
@@ -349,60 +350,6 @@ class PhotographerScorekeeper {
   }
 }
 
-class EnglishTeacherScorekeeper {
-  COMMA_WEIGHT = 1;
-  SEMICOLON_WEIGHT = 3;
-
-  constructor(members) {
-    this.punctuationScores = {};
-
-    for (const member of members) {
-      this.punctuationScores[member] = 0.0;
-    }
-
-    this.totalPunctuationScore = 0.0;
-  }
-
-  update(message) {
-    let member = message["sender_name"];
-    let scoreIncrement = 0.0;
-
-    if (member in this.punctuationScores) {
-      if ("content" in message) {
-        const commaCount = ((message["content"]).match(/[A-Za-z],\s/g) || []).length;
-        const semicolonCount = ((message["content"]).match(/[A-Za-z];\s/g) || []).length;
-        // no period counts because all "CMO changed the nickname of Kevin Xu to CFO"
-
-        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.SEMICOLON_WEIGHT * semicolonCount;
-        this.punctuationScores[member] += scoreIncrement;
-        this.totalPunctuationScore += scoreIncrement;
-      }
-    }
-  }
-
-  // PAT DEBUG do valid with numMessages
-  valid() {
-    console.log('tps: ' + this.totalPunctuationScore)
-    return this.totalPunctuationScore > 100;
-  }
-
-  scores() {
-    let scores = {};
-
-    for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
-      if (punctuationScore > 0) {
-        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
-      }
-    }
-
-    return scores;
-  }
-
-  role() {
-    return 'The English Teacher';
-  }
-}
-
 class ReacterScorekeeper {
   constructor(members) {
     this.reactsMade = {};
@@ -445,6 +392,122 @@ class ReacterScorekeeper {
 
   role() {
     return 'The Reacter';
+  }
+}
+
+class EnglishTeacherScorekeeper {
+  COMMA_WEIGHT = 1;
+  SEMICOLON_WEIGHT = 3;
+
+  constructor(members) {
+    this.punctuationScores = {};
+
+    for (const member of members) {
+      this.punctuationScores[member] = 0.0;
+    }
+
+    this.totalPunctuationScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.punctuationScores) {
+      if ("content" in message) {
+        const content = message["content"]
+        const commaCount = (content.match(/[A-Za-z],\s/g) || []).length;
+        const semicolonCount = (content.match(/[A-Za-z];\s/g) || []).length;
+        // no period counts because all "CMO changed the nickname of Kevin Xu to CFO"
+
+        scoreIncrement = this.COMMA_WEIGHT * commaCount + this.SEMICOLON_WEIGHT * semicolonCount;
+        this.punctuationScores[member] += scoreIncrement;
+        this.totalPunctuationScore += scoreIncrement;
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalPunctuationScore > 100;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
+      if (punctuationScore > 0) {
+        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The English Teacher';
+  }
+}
+
+class SailorScorekeeper {
+  SWEAR_WEIGHTS = {
+    'shit': 1,
+    'bitch': 1,
+    '\bass\b': 1,
+    'cunt': 1,
+    'fuck': 1,
+    'motherfuck': 1, // motherfuck contains fuck, so really it's 1 + 1 = 2
+  };
+
+  constructor(members) {
+    this.swearScores = {};
+
+    for (const member of members) {
+      this.swearScores[member] = 0.0;
+    }
+
+    this.totalSwearScore = 0.0;
+  }
+
+  update(message) {
+    let member = message["sender_name"];
+    let scoreIncrement = 0.0;
+
+    if (member in this.swearScores) {
+      if ('content' in message) {
+        const content = message['content']
+
+        for (const word in this.SWEAR_WEIGHTS) {
+          const regex = new RegExp(`${word}`, 'gi')
+          const wordCount = (content.match(regex) || []).length;
+          scoreIncrement += this.SWEAR_WEIGHTS[word] * wordCount;
+        }
+
+        this.swearScores[member] += scoreIncrement;
+        this.totalSwearScore += scoreIncrement;
+      }
+    }
+  }
+
+  // PAT DEBUG do valid with numMessages
+  valid() {
+    return this.totalSwearScore > 10;
+  }
+
+  scores() {
+    let scores = {};
+
+    for (const [member, swearScore] of Object.entries(this.swearScores)) {
+      if (swearScore > 0) {
+        scores[member] = [this.role(), swearScore / this.totalSwearScore];
+      }
+    }
+
+    return scores;
+  }
+
+  role() {
+    return 'The Sailor';
   }
 }
 
