@@ -1,0 +1,18 @@
+.tutorialPanel {
+    display: flex;
+    flex-direction: column;
+    font-size: calc(2px + 2vmin);
+}
+
+.stepImg {
+   max-width: 50%;
+   height: auto;
+   padding: 1vmin;
+}
+
+.stepPanelH {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 5vmin;
+}

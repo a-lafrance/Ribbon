@@ -172,57 +172,71 @@ class RoleAssigner {
 
   assignRoles() {
     let scores = this.getScores();
+    console.log('scores')
+    console.log(scores)
     let totals = {};
 
     for (const scorekeeper of this.scorekeepers) {
-      totals[scorekeeper.role()] = 1;
+      const roleNames = scorekeeper.role()
+      const canonicalRole = roleNames[0]
+      totals[canonicalRole] = 1;
     }
 
-    let roles = new OneToOneDict();
+    let roleAssignments = new OneToOneDict();
+    let outputRolesData = new OneToOneDict();
     let n_unassigned = Object.keys(scores).length;
 
     while (n_unassigned > 0) {
-      let [member, role, score] = this.findBestScore(scores, totals, roles);
+      let [member, canonicalRole, displayRole, score, displayData] = this.findBestScore(scores, totals, roleAssignments);
 
       if (member != null) {
-        roles.set(member, role);
+        roleAssignments.set(member, canonicalRole);
+        outputRolesData.set(member, [displayRole, displayData])
 
-        for (const [role, score] in scores[member]) {
-          totals[role] -= score;
+        for (const [roleNames, score, displayData] in scores[member]) {
+          const canonicalRole = roleNames[0]
+          totals[canonicalRole] -= score;
+          console.log('totals')
+          console.log(totals)
         }
       }
 
       n_unassigned--;
     }
 
-    return roles.getItems();
+    return outputRolesData.getItems();
   }
 
-  findBestScore(scores, totals, roles) {
+  findBestScore(scores, totals, roleAssignments) {
     let bestScore = null;
     let winner = null;
-    let winningRole = null;
+    let winningCanonicalRole = null;
+    let winningDisplayRole = null;
+    let bestDisplayData = null;
 
     for (const [member, memberScores] of Object.entries(scores)) {
       // don't assign to members that already have a role
-      if (!roles.hasKey(member)) {
-        for (const [role, score] of memberScores) {
+      if (!roleAssignments.hasKey(member)) {
+        for (const [roleNames, score, displayData] of memberScores) {
+          const canonicalRole = roleNames[0]
 
-          // don't assign roles that have been assigned
-          if (!roles.hasValue(role)) {
-            let normalizedScore = score / totals[role];
+          // don't assign roles that have been assigned twice
+          if (roleAssignments.valueCount(canonicalRole) < 2) {
+            let normalizedScore = score / totals[canonicalRole];
 
             if (bestScore == null || normalizedScore > bestScore) {
               bestScore = normalizedScore;
               winner = member;
-              winningRole = role;
+              winningCanonicalRole = canonicalRole;
+              winningDisplayRole = roleNames[roleAssignments.valueCount(canonicalRole)];
+              bestDisplayData = displayData;
             }
           }
         }
       }
     }
 
-    return [winner, winningRole, totals[winningRole] * bestScore]
+    return [winner, winningCanonicalRole, winningDisplayRole, totals[winningCanonicalRole] * bestScore, bestDisplayData]
   }
 }
 
@@ -255,7 +269,8 @@ class BlabbermouthScorekeeper {
 
     for (const [member, messagesSent] of Object.entries(this.messagesSent)) {
       if (messagesSent > 0) {
-        scores[member] = [this.role(), messagesSent / this.totalMessages];
+        const percent = messagesSent / this.totalMessages;
+        scores[member] = [this.role(), percent, percent];
       }
     }
 
@@ -263,7 +278,7 @@ class BlabbermouthScorekeeper {
   }
 
   role() {
-    return 'The Blabbermouth';
+    return ['The Blabbermouth', 'The Blabbertooth'];
   }
 }
 
@@ -300,7 +315,8 @@ class TalkerScorekeeper {
 
     for (const [member, wordsSent] of Object.entries(this.wordsSent)) {
       if (wordsSent > 0) {
-        scores[member] = [this.role(), wordsSent / this.totalWords];
+        const percent = wordsSent / this.totalWords;
+        scores[member] = [this.role(), percent, percent];
       }
     }
 
@@ -308,7 +324,7 @@ class TalkerScorekeeper {
   }
 
   role() {
-    return 'The Talker';
+    return ['The Word Wizard', 'The Alphabet Apprentice'];
   }
 }
 
@@ -327,10 +343,12 @@ class LurkerScorekeeper {
 
   scores() {
     let scores = this.inverse.scores();
+    console.log(scores)
     let totalScore = 0.0;
 
-    for (const [member, score] of Object.entries(scores)) {
+    for (const [role, score] of Object.entries(scores)) {
       score[0] = this.role();
+      score[2] = score[1];
       score[1] = 1.0 - score[1];
 
       totalScore += score[1];
@@ -344,7 +362,7 @@ class LurkerScorekeeper {
   }
 
   role() {
-    return 'The Lurker';
+    return ['The Stone', 'The Pebble'];
   }
 }
 
@@ -381,7 +399,8 @@ class PhotographerScorekeeper {
 
     for (const [member, photosSent] of Object.entries(this.photosSent)) {
       if (photosSent > 0) {
-        scores[member] = [this.role(), photosSent / this.totalPhotos];
+        const percent = photosSent / this.totalPhotos
+        scores[member] = [this.role(), percent, percent];
       }
     }
 
@@ -389,7 +408,7 @@ class PhotographerScorekeeper {
   }
 
   role() {
-    return 'The Photographer';
+    return ['The Photographer', 'The Amateur Photographer'];
   }
 }
 
@@ -426,7 +445,8 @@ class ReacterScorekeeper {
 
     for (const [member, reactsMade] of Object.entries(this.reactsMade)) {
       if (reactsMade > 0) {
-        scores[member] = [this.role(), reactsMade / this.totalReacts];
+        const percent = reactsMade / this.totalReacts;
+        scores[member] = [this.role(), percent, percent];
       }
     }
 
@@ -434,7 +454,7 @@ class ReacterScorekeeper {
   }
 
   role() {
-    return 'The Reacter';
+    return ['The Reactor', 'The Encourager'];
   }
 }
 
@@ -480,7 +500,8 @@ class EnglishTeacherScorekeeper {
 
     for (const [member, punctuationScore] of Object.entries(this.punctuationScores)) {
       if (punctuationScore > 0) {
-        scores[member] = [this.role(), punctuationScore / this.totalPunctuationScore];
+        const percent = punctuationScore / this.totalPunctuationScore;
+        scores[member] = [this.role(), percent, percent];
       }
     }
 
@@ -488,7 +509,7 @@ class EnglishTeacherScorekeeper {
   }
 
   role() {
-    return 'The English Teacher';
+    return ['The English Teacher', 'The English TA'];
   }
 }
 
@@ -542,7 +563,8 @@ class SailorScorekeeper {
 
     for (const [member, swearScore] of Object.entries(this.swearScores)) {
       if (swearScore > 0) {
-        scores[member] = [this.role(), swearScore / this.totalSwearScore];
+        const percent = swearScore / this.totalSwearScore;
+        scores[member] = [this.role(), percent, percent];
       }
     }
 
@@ -550,12 +572,6 @@ class SailorScorekeeper {
   }
 
   role() {
-    return 'The Sailor';
+    return ['The Sailor', 'The First Mate'];
   }
-}
-
-// NOTE: this is for testing
-function processContent(content) {
-  console.log("calculating scores for chat named '" + content.title + "'");
-  console.log(analyzeGroupchat(content));
 }

@@ -15,7 +15,7 @@ export class OneToOneDict {
 
   constructor() {
     this.items = {};
-    this.values = new Set();
+    this.counts = {};
   }
 
   get(key) {
@@ -23,19 +23,25 @@ export class OneToOneDict {
   }
 
   set(key, value) {
-    let prev = this.items[key];
-    this.values.delete(prev);
-
     this.items[key] = value;
-    this.values.add(value);
+
+    if (!(value in this.counts)) {
+      this.counts[value] = 0;
+    }
+
+    this.counts[value] += 1;
   }
 
   hasKey(key) {
     return (key in this.items);
   }
 
-  hasValue(value) {
-    return this.values.has(value);
+  valueCount(value) {
+    if (value in this.counts) {
+      return this.counts[value];
+    } else {
+      return 0;
+    }
   }
 
   getItems() {
