@@ -1,7 +1,7 @@
 # TODO
 What we have left to finish
 
-- [ ] Save result in API
+- [x] Save result in API
 - [ ] Write README
 - [ ] Make video
 - [ ] Make Devpost
