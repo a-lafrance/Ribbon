@@ -22,12 +22,13 @@ export default function analyzeGroupchat(content) {
   }
 
   let totalReactsByMember = {};
+  let totalMessages = 0;
+  let totalMessagesByMember = {};
 
   for (const member of members) {
     totalReactsByMember[member] = 0;
+    totalMessagesByMember[member] = 0;
   }
-
-  let totalMessages = 0;
 
   let reactCounts = {};
   let longestStreak = [];
@@ -47,6 +48,11 @@ export default function analyzeGroupchat(content) {
     let sender = message["sender_name"];
 
     if (validMembers.has(sender)) {
+      // if valid, increment total messages
+      totalMessages++;
+      totalMessagesByMember[sender]++;
+
+      // get time stuff
       let currMillis = message["timestamp_ms"];
       let date = new Date(currMillis);
       let time = date.getHours();
@@ -123,6 +129,8 @@ export default function analyzeGroupchat(content) {
     reactCounts: reactCounts,
     longestStreak: [longestStreakStartMillis, longestStreakEndMillis],
     firstMessage: firstMessage,
+    totalMessages: totalMessages,
+    totalMessagesByMember: totalMessagesByMember,
     roles: roleAssigner.assignRoles()
   };
 }
