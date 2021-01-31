@@ -6,8 +6,6 @@ export async function getResult(id) {
 }
 
 export async function saveResult(result) {
-  result.longestStreak = result.longestStreak.map(date => (new Date(date)).toISOString().slice(0, 10));
-
   return fetch("http://" + apiUrlDev + "/results", {
       method: 'POST',
       headers: {

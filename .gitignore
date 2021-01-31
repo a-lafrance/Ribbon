@@ -6,6 +6,7 @@ package-lock.json
 /.pnp
 .pnp.js
 venv/
+db.sqlite3
 
 # testing
 /coverage
@@ -25,6 +26,3 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
-
-# python venv
-**/venv/**/*

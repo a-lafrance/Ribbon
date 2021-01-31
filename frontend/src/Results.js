@@ -16,7 +16,7 @@ import {
 } from "react-router-dom";
 
 import './App.css';
-import './styles/PanelCard.css'
+import './styles/PanelCard.css';
 import GeneralStats from './components/GeneralStats.js';
 
 class Results extends React.Component {
@@ -33,14 +33,14 @@ class Results extends React.Component {
 
     componentDidMount() {
       getResult(this.state.id).then(response => response.json()).then(data => {
-        this.setState({ result: data})
+        this.setState({result: data})
       });
     }
 
     render() {
       return (
           <div>
-              whats up ive been routed to results @ id = {this.state.result.id}
+              whats up ive been routed to results @ id = {this.state.id}
               {<GeneralStats results={this.state.result}/>}
               {/* move the below code back up here */}
           </div>
