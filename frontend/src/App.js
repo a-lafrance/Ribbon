@@ -19,7 +19,7 @@ class App extends React.Component {
     console.log(files);
     const file = files[0];
     const fr = new FileReader();
-    fr.onload = function (e) {
+    fr.onload = (e) => {
       const content = JSON.parse(e.target.result);
       //processContent(content)
       // Import Arthur's js processing and call it here
