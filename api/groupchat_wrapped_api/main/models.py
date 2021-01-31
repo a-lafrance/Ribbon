@@ -4,7 +4,7 @@ from . import utils
 import datetime
 
 class GroupchatWrappedResult(models.Model):
-    chat_name = models.CharField(max_length=utils.CHATNAME_MAX_LEN)
+    title = models.CharField(max_length=utils.CHATNAME_MAX_LEN)
     msg_count = models.IntegerField()
 
     most_frequent_time = models.IntegerField()
@@ -19,7 +19,7 @@ class GroupchatWrappedResult(models.Model):
     first_msg = models.CharField(max_length=utils.MSG_MAX_LEN)
 
     def create_from_json(params: dict):
-        chat_name = params['chatName']
+        title = params['title']
         msg_count = params['totalMessages']
 
         most_frequent_time, most_frequent_time_msg_count = params['mostFrequentTime']
@@ -32,7 +32,7 @@ class GroupchatWrappedResult(models.Model):
         first_msg = params['firstMessage']
 
         result = GroupchatWrappedResult.objects.create(
-            chat_name=chat_name,
+            title=title,
             msg_count=msg_count,
             most_frequent_time=most_frequent_time,
             most_frequent_time_msg_count=most_frequent_time_msg_count,
@@ -57,7 +57,7 @@ class GroupchatWrappedResult(models.Model):
     def json(self):
         return {
             'id' : self.id,
-            'chatName' : self.chat_name,
+            'title' : self.title,
             'totalMessages' : self.msg_count,
             'mostFrequentTime' : [self.most_frequent_time, self.most_frequent_time_msg_count],
             'mostTotalReacts' : [self.most_total_reacts_member, self.most_total_reacts],
