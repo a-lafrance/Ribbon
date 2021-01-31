@@ -67,7 +67,6 @@ class Results extends React.Component {
       return (
           <div className='Results'>
             <div className='container'>
-              whats up ive been routed to results @ id = {this.state.id}
               <h1>{this.state.result.title}</h1>
               {<GeneralStats results={this.state.result}/>}
               {<MemberStats results={this.state.result}/>}

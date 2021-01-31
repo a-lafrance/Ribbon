@@ -9,8 +9,10 @@ let MessageStats = props => {
     let firstMessage;
 
     if (Object.keys(props.results).length > 0) { 
-        longestStreakStart = props.results['longestStreak'][0];
-        longestStreakEnd = props.results['longestStreak'][1];
+        longestStreakStart = new Date(props.results['longestStreak'][0]);
+        longestStreakStart = longestStreakStart.getMonth() + "-" + longestStreakStart.getDay() + "-" + longestStreakStart.getFullYear();
+        longestStreakEnd = new Date(props.results['longestStreak'][1]);
+        longestStreakEnd = longestStreakEnd.getMonth() + "-" + longestStreakEnd.getDay() + "-" + longestStreakEnd.getFullYear();
         firstMessage = props.results['firstMessage'];
     }
 
