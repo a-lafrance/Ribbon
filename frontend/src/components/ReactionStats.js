@@ -13,7 +13,7 @@ let ReactionStats = props => {
     return(
         <div className="panelCard"> 
             <div> Total reacts: {totalReacts} </div>
-            <div> Distribution: </div>
+            <div> Reaction distribution: soon</div>
         </div>
     );
 }

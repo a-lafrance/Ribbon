@@ -1,27 +1,16 @@
 .roleCard {
-    margin: 5vmin;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  padding: 5vmin;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
-.roleTitle {
-    font-size: xx-large;
+.roleInfo {
+  text-align: left;
+  font-size: 24px;
 }
 
-.roleCardInner {
-    display: grid;
-    grid-template-columns: 256px 256px;
-    grid-gap: 1rem;
-}
-
-.roleCardInnerInfo {
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-}
-
-.roleIcon {
-    width: auto;
-    max-height: 256px;
-    
+h2 {
+  font-size: 48px;
+  font-weight: 500;
+  margin: 8px;
 }
