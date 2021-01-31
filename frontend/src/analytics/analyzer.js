@@ -57,7 +57,7 @@ export default function analyzeGroupchat(content) {
 
         // increment react counts
         for (const react of message.reactions) {
-          let icon = react.reaction;
+          let icon = decodeUtf8(react.reaction);
 
           if (icon in reactCounts) {
             reactCounts[icon]++;
