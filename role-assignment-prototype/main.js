@@ -40,6 +40,101 @@ class RoleAssigner {
 
     return scores;
   }
+
+  /*
+  assign_roles(scores, totals):
+  where scores = {person : [(role, score)]}
+  and totals = {role : total score}, totals[role] = 1 initially for all roles
+
+  roles = {}
+  n_people = len(scores)
+  n_assigned = 0
+
+  # find the best overall match, ie the person who best "dominates" a role
+  # repeat until no more people are unassigned
+  while n_assigned < n_people:
+    # find the person who best "dominates" a role
+    person, role, score = find_best_score(scores, totals)
+
+    # assign that role to that person
+    roles[person] = role
+
+    # subtract their score from the total for the role
+    for role, score in scores[person]:
+      totals[role] -= score
+
+  return roles
+  */
+  assignRoles() {
+    let scores = this.getScores();
+    let totals = {};
+
+    for (const scorekeeper of this.scorekeepers) {
+      totals[scorekeeper.role()] = 1;
+    }
+
+    let roles = {};
+    let n_unassigned = Object.keys(scores).length;
+
+    while (n_unassigned > 0) {
+      console.log('' + n_unassigned + ' left!');
+      let [member, role, score] = this.findBestScore(scores, totals, roles);
+      roles[role] = member;
+
+      for (const [role, score] in scores[member]) {
+        totals[role] -= score;
+      }
+
+      n_unassigned--;
+    }
+
+    return roles;
+  }
+/*
+find_best_score(scores, totals):
+  # init to defaults
+  best_score = -inf
+  winner = nil
+  winning_role = nil
+
+  # for each (person, role) combination, find the one that produces the best normalized score
+  for person in scores:
+    for role, raw_score in scores[person]:
+      # raw_score is the score relative to a 0...1 scale
+      # normalized_score is raw_score normalized to remaining total score
+      normalized_score = raw_score / totals[role]
+
+      # if this is the best option, overwrite the previous best
+      if normalized_score > best_score:
+        best_score = normalized_score
+        winner = person
+        winning_role = role
+
+  # return winner & associated values
+  return winner, winning_role, totals[winning_role] * best_score
+  */
+
+  findBestScore(scores, totals, roles) {
+    let bestScore = null;
+    let winner = null;
+    let winningRole = null;
+
+    for (const [member, memberScores] of Object.entries(scores)) {
+      for (const [role, score] of memberScores) {
+        if (!(role in roles)) {
+          let normalizedScore = score / totals[role];
+
+          if (bestScore == null || normalizedScore > bestScore) {
+            bestScore = normalizedScore;
+            winner = member;
+            winningRole = role;
+          }
+        }
+      }
+    }
+
+    return [winner, winningRole, totals[winningRole] * bestScore]
+  }
 }
 
 class BlabbermouthScorekeeper {
@@ -67,11 +162,15 @@ class BlabbermouthScorekeeper {
 
     for (const [member, messagesSent] of Object.entries(this.messagesSent)) {
       if (messagesSent > 0) {
-        scores[member] = ['Blabbermouth', messagesSent / this.totalMessages];
+        scores[member] = [this.role(), messagesSent / this.totalMessages];
       }
     }
 
     return scores;
+  }
+
+  role() {
+    return 'Blabbermouth';
   }
 }
 
@@ -104,11 +203,15 @@ class TalkerScorekeeper {
 
     for (const [member, wordsSent] of Object.entries(this.wordsSent)) {
       if (wordsSent > 0) {
-        scores[member] = ['Talker', wordsSent / this.totalWords];
+        scores[member] = [this.role(), wordsSent / this.totalWords];
       }
     }
 
     return scores;
+  }
+
+  role() {
+    return 'Talker';
   }
 }
 
@@ -126,7 +229,7 @@ class LurkerScorekeeper {
     let totalScore = 0.0;
 
     for (const [member, score] of Object.entries(scores)) {
-      score[0] = 'Lurker';
+      score[0] = this.role();
       score[1] = 1.0 - score[1];
 
       totalScore += score[1];
@@ -137,6 +240,10 @@ class LurkerScorekeeper {
     }
 
     return scores;
+  }
+
+  role() {
+    return 'Lurker';
   }
 }
 
@@ -169,11 +276,15 @@ class PhotographerScorekeeper {
 
     for (const [member, photosSent] of Object.entries(this.photosSent)) {
       if (photosSent > 0) {
-        scores[member] = ['Photographer', photosSent / this.totalPhotos];
+        scores[member] = [this.role(), photosSent / this.totalPhotos];
       }
     }
 
     return scores;
+  }
+
+  role() {
+    return 'Photographer';
   }
 }
 
@@ -206,11 +317,15 @@ class ReacterScorekeeper {
 
     for (const [member, reactsMade] of Object.entries(this.reactsMade)) {
       if (reactsMade > 0) {
-        scores[member] = ['Reacter', reactsMade / this.totalReacts];
+        scores[member] = [this.role(), reactsMade / this.totalReacts];
       }
     }
 
     return scores;
+  }
+
+  role() {
+    return 'Reacter';
   }
 }
 
@@ -238,6 +353,9 @@ function processContent(content) {
     // update for sender
 
   console.log(roleAssigner.getScores());
+
+  console.log('Final results:');
+  console.log(roleAssigner.assignRoles());
 
   console.log('');
 }
