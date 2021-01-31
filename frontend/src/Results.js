@@ -27,14 +27,33 @@ class Results extends React.Component {
 
       this.state = {
         id: id,
-        result: {}
+        result: {},
+        roleComponents: []
       }
     }
 
     componentDidMount() {
       getResult(this.state.id).then(response => response.json()).then(data => {
         this.setState({result: data})
+      })
+      .then(res => {
+          this.setState({roleComponents: this.genRoles()});
       });
+    }
+
+    genRoles() {
+        let roles = this.state?.result.roles;
+        console.log("raw roles",roles);
+        console.log("objected", Object.entries(roles));
+    
+        // Holds an array of the role components to display
+        let rComponents = [];
+        Object.entries(roles).forEach((val, i) => {
+            console.log(val);
+            rComponents.push(<Role data={val} key={i}/>);
+        });
+
+        return rComponents;        
     }
 
     render() {
@@ -42,19 +61,17 @@ class Results extends React.Component {
           <div>
               whats up ive been routed to results @ id = {this.state.id}
               {<GeneralStats results={this.state.result}/>}
-              {/* move the below code back up here */}
+              {this.state.roleComponents}
           </div>
       );
     }
     // let roles = props.results.roles;
     // console.log("raw roles",roles);
     // console.log(Object.values(roles));
-    //
+    
     // // Holds an array of the role components to display
     // let roleComponents = [];
     // for(var i in roles) roleComponents.push(<Role data={roles[i]} key={i}/>);
 
-    // temporarily moved down here
-    // {roleComponents}
 }
 export default withRouter(Results);

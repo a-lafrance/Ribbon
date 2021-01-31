@@ -38,25 +38,28 @@ let Role = props => {
         'The First Mate': [sailor2, 'Potty mouth in training. Mouth is probably full of shit right now.', '% of total swear words'],
         'The Emoji Spammer': [emoji1, '😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂😂', '% of total emojis sent'],
         'The Emoji Poweruser': [emoji2, '😳😳😳😳👇🏻👆🏻😳👆🏻👆🏻', '% of total emojis sent'],
-        'The Name Author': [name1, 'Some crimes go unpunished. Also known as', '% of total nickname changes'],
+        'The Name Author': [name1, 'Some crimes go unpunished. Also known as:', '% of total nickname changes'],
         'The Name Editor': [name2, 'Only dabbles a bit in the dark art of text manipulation.', '% of total nickname changes'],
     }
 
     // Parse relevant data from the prop
-    let roleIcon = roleDict['The Alphabet Apprentice'][0];
-    let roleTitle = 'The Alphabet Apprentice';
-    let rolePersonName = 'insert name';
-    let roleStat = 22 + roleDict['The Alphabet Apprentice'][2];
+    let roleIcon = roleDict[props.data[1][0]][0];
+    let roleTitle = props.data[1][0];
+    let roleDesc = roleDict[props.data[1][0]][1];
+    let rolePersonName = props.data[0];
+    let roleStat = (props.data[1][1]*100).toPrecision(3) + roleDict[props.data[1][0]][2];
 
     return (
         <div className="panelCard roleCard">
-            <div className="roleTitle"> {roleTitle} </div>
+            
             <div className="roleCardInner">
                 <div>
                     <img className="roleIcon" src={roleIcon} />
                 </div>
-                <div>
+                <div className="roleCardInnerInfo">
+                    <div className="roleTitle"> {roleTitle} </div>
                     <div> {rolePersonName} </div>
+                    <div> {roleDesc} </div>
                     <div> {roleStat} </div>
                 </div>
             </div>
